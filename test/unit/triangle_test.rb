@@ -102,4 +102,27 @@ class TriangleTest < Test::Unit::TestCase
     assert Circle.new(Point.new(1,1), radius2), t2.circumcircle
   end
 
+  def test_edges
+    t1 = Triangle.new(
+      Point.new(-1,-1,0),
+      Point.new(1,-1,0),
+      Point.new(1,1,0)  
+    )
+    edges = t1.edges
+    assert edges.include?(Edge.new(Point.new(-1,-1), Point.new(1,-1)))
+    assert edges.include?(Edge.new(Point.new(1,-1), Point.new(-1,-1)))
+    assert edges.include?(Edge.new(Point.new(1,1), Point.new(1,-1)))
+    assert !edges.include?(Edge.new(Point.new(0,-1), Point.new(1,-1)))
+  end
+
+  def test_to_s
+    t1 = Triangle.new(
+      Point.new(-1,-1,0),
+      Point.new(1,-1,0),
+      Point.new(1,1,0)  
+    )
+
+    assert_equal "[(-1,-1,0),(1,-1,0),(1,1,0)]", t1.to_s
+  end
+
 end

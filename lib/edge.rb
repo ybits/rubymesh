@@ -1,6 +1,7 @@
 require 'lib/point'
 
 class Edge < Array
+  include Comparable  
 
   def initialize p1, p2
     @p1 = p1
@@ -30,11 +31,23 @@ class Edge < Array
     (@p1 + @p2) / 2
   end
 
+=begin
   def == other
     intersection = self.reject do |element|
       !other.include?(element)
     end 
     intersection.size == 2
+  end
+=end
+
+  def <=> other
+    clone = self.sort
+    other_clone = other.sort
+    clone[0] != other_clone[0] ? clone[0] <=> other_clone[0] : clone[1] <=> other_clone[1]
+  end
+
+  def to_s
+    "[#{@p1},#{@p2}]"
   end
 
 end

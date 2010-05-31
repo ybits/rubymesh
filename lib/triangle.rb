@@ -1,4 +1,5 @@
 require 'lib/point'
+require 'lib/edge'
 require 'lib/circle'
 
 class Triangle < Array
@@ -40,8 +41,16 @@ class Triangle < Array
     reset_circumcircle
   end
 
+  def to_s
+    "[#{@p1},#{@p2},#{@p3}]"
+  end
+
   def centroid
     return (@p1 + @p2 + @p3) / 3
+  end
+
+  def edges
+    return [Edge.new(@p1, @p2), Edge.new(@p2, @p3), Edge.new(@p3, @p1)]    
   end
 
   def adjacent? other
@@ -51,11 +60,25 @@ class Triangle < Array
     intersection.length == 2
   end
 
+=begin
   def == other
     intersection = self.reject do |element|
       !other.include?(element)
     end
     intersection.length == 3
+  end
+=end
+
+  def <=> other
+    clone = self.sort
+    other_clone = other.sort
+    if clone[0] != other_clone[0]
+      return clone[0] <=> other_clone[0]
+    elsif clone[1] != other_clone[1]
+      return clone[1] <=> other_clone[1]
+    else
+      return clone[2] <=> other_clone[2]
+    end
   end
 
   def circumcircle
@@ -76,6 +99,7 @@ class Triangle < Array
     end
 
     def circumcircle_radius center
+      puts center 
       Math.sqrt((@p1.x - center.x)**2 + (@p1.y - center.y)**2) 
     end
 

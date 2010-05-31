@@ -40,10 +40,8 @@ class Point
       return @x <=> other.x
     elsif @y != other.y
       return @y <=> other.y
-    elsif @z != other.z
-      return @z <=> other.z
     else
-      return 1 <=> 1
+      return @z <=> other.z
     end
   end
   

@@ -4,11 +4,8 @@ require 'lib/triangulation'
 class TriangleTest < Test::Unit::TestCase
 
   def test_initialize
-    points = [Point.new(1,1), Point.new(2,2)]
-    triangulation = Triangulation.new(points)
-    points.each do |vertex|
-      assert triangulation.vertices.include?(vertex)
-    end
+    points = [Point.new(1,1), Point.new(2,2), Point.new(3,3)]
+    Triangulation.triangulate(points)
   end
 
   def test_supertriangle
