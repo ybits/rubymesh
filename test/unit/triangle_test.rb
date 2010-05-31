@@ -83,4 +83,23 @@ class TriangleTest < Test::Unit::TestCase
     assert t2 != t3 
   end
 
+  def test_circumcenter
+    t1 = Triangle.new(
+      Point.new(-1,-1,0),
+      Point.new(1,-1,0),
+      Point.new(1,1,0)  
+    )
+    radius1 = Math.sqrt(2)
+    
+    t2 = Triangle.new(
+      Point.new(0,0,0),
+      Point.new(2,0,0),
+      Point.new(2,1,0)  
+    )
+    radius2 = Math.sqrt(2)
+  
+    assert Circle.new(Point.new(0,0), radius1), t1.circumcircle
+    assert Circle.new(Point.new(1,1), radius2), t2.circumcircle
+  end
+
 end

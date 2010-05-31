@@ -30,10 +30,11 @@ end
 
 class Triangulation 
  
-  attr_accessor :vetices
+  attr_accessor :vertices
  
   def initialize vertices
     @vertices = vertices
+    @vertices.sort
   end
 
 end
