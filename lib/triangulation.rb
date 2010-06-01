@@ -2,7 +2,8 @@ require 'lib/triangle'
 
 module Enumerable
   def remove_duplicates
-    inject({}) {|h,v| h[v]=h[v].to_i+1; h}.reject{|k,v| v>1}.keys
+    #inject({}) {|h,v| h[v]=h[v].to_i+1; h}.reject{|k,v| v>1}.keys
+    
   end
 end
 
@@ -39,40 +40,75 @@ class Triangulation
   def self.triangulate vertices
     vertices.sort!
     triangles = []
-    super_triangle = self.build_supertriangle vertices
-    vertices.push(super_triangle.p1, super_triangle.p2, super_triangle.p3)
+    super_triangle = self.super_triangle vertices
+    #vertices.push(super_triangle.p1, super_triangle.p2, super_triangle.p3)
     triangles.push(super_triangle)
-    
     vertices.each do |vertex|
       edges = []
       triangles_to_remove = []
       triangles.each do |triangle|
-        if triangle.circumcircle.circumscribes?(vertex)
+      if triangle.circumcircle.circumscribes?(vertex)
           edges += triangle.edges
           triangles_to_remove.push(triangle)
         end
       end
-      triangles = triangles.reject do |triangle|
-        triangles_to_remove.include?(triangle)
-      end
-      edges = edges.remove_duplicates
+      triangles = self.remove_triangles triangles, triangles_to_remove
+      edges = self.remove_duplicate_edges edges
       edges.each do |edge|
         triangles.push(Triangle.new(edge.p1, edge.p2, vertex))
       end
     end
     
-    triangles = triangles.reject do |triangle|
+    triangles = self.remove_triangles_incident_to_super_triangle(
+      triangles,
+      super_triangle
+    )
+
+    #vertices = self.remove_vertices_of_super_triangle
+  end
+
+  def self.remove_triangles triangles, triangles_to_remove
+    triangles.reject do |triangle|
+      triangles_to_remove.include?(triangle)
+    end
+  end
+
+  #FIXME THIS SUCKS.
+  def self.remove_duplicate_edges edges
+    hash = {}
+    edges = edges.each do |edge|
+      edge.sort!
+      key = "#{edge[0]},#{edge[1]}"
+      if hash[key].nil?
+        hash[key] = 1
+      else
+        hash[key] = 2
+      end
+    end
+    
+    edges = edges.reject do |edge| 
+      edge.sort!
+      key = "#{edge[0]},#{edge[1]}"
+      hash[key] > 1
+    end
+  end
+
+  def self.remove_triangles_incident_to_super_triangle triangles, super_triangle
+    triangles.reject do |triangle|
       triangle.include?(super_triangle.p1) or
       triangle.include?(super_triangle.p2) or
       triangle.include?(super_triangle.p3)
     end
+  end 
 
+  def self.remove_vertices_of_super_triangle vertices
     vertices.pop
     vertices.pop
-    vertices.pop 
+    vertices.pop
+    vertices
   end
 
-  def self.build_supertriangle vertices
+  def self.super_triangle vertices
     x_min = vertices[0].x
     y_min = vertices[0].y
     x_max = x_min

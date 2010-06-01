@@ -88,7 +88,6 @@ class Triangle < Array
   
     center = circumcenter
     radius = circumcircle_radius(center)
-
     @circumcircle = Circle.new(center, radius)
   end
 
@@ -99,7 +98,6 @@ class Triangle < Array
     end
 
     def circumcircle_radius center
-      puts center 
       Math.sqrt((@p1.x - center.x)**2 + (@p1.y - center.y)**2) 
     end
 
@@ -110,9 +108,9 @@ class Triangle < Array
     def circumcenter_denominator
       denominator = 2 * 
         (
-          @p1.x * (@p2.y - @p3.y) +
-          @p2.x * (@p3.y - @p1.y) + 
-          @p3.x * (@p1.y - @p2.y)
+          (@p1.x * (@p2.y - @p3.y)) +
+          (@p2.x * (@p3.y - @p1.y)) + 
+          (@p3.x * (@p1.y - @p2.y))
         )
     end
 
