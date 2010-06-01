@@ -98,6 +98,8 @@ class Triangle < Array
     end
 
     def circumcircle_radius center
+      puts "Self: #{self}"
+      puts "Center: #{center}"
       Math.sqrt((@p1.x - center.x)**2 + (@p1.y - center.y)**2) 
     end
 

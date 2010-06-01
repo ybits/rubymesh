@@ -1,12 +1,5 @@
 require 'lib/triangle'
 
-module Enumerable
-  def remove_duplicates
-    #inject({}) {|h,v| h[v]=h[v].to_i+1; h}.reject{|k,v| v>1}.keys
-    
-  end
-end
-
 =begin
 subroutine triangulate
 input : vertex list
@@ -34,29 +27,34 @@ output : triangle list
 end
 =end
 
+class Triangle
+  attr_accessor :finished
+end
 
 class Triangulation 
- 
+
   def self.triangulate vertices
     vertices.sort!
-    triangles = []
     super_triangle = self.super_triangle vertices
-    #vertices.push(super_triangle.p1, super_triangle.p2, super_triangle.p3)
+    
+    triangles = []
     triangles.push(super_triangle)
+   
     vertices.each do |vertex|
       edges = []
-      triangles_to_remove = []
       triangles.each do |triangle|
-      if triangle.circumcircle.circumscribes?(vertex)
+        next if triangle.finished
+        if triangle.circumcircle.circumscribes?(vertex)
           edges += triangle.edges
-          triangles_to_remove.push(triangle)
+          triangle.finished = true
         end
       end
-      triangles = self.remove_triangles triangles, triangles_to_remove
       edges = self.remove_duplicate_edges edges
       edges.each do |edge|
+        # How can vertex BE in the in edge???
         triangles.push(Triangle.new(edge.p1, edge.p2, vertex))
       end
+      puts "Finished: #{triangles}"
     end
     
     triangles = self.remove_triangles_incident_to_super_triangle(
@@ -64,7 +62,6 @@ class Triangulation
       super_triangle
     )
 
-    #vertices = self.remove_vertices_of_super_triangle
   end
 
   def self.remove_triangles triangles, triangles_to_remove

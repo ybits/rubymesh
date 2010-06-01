@@ -15,7 +15,7 @@ class Circle
 
   def circumscribes? point
     squared_dist = (@center.x - point.x) ** 2 + (center.y - point.y) ** 2
-    return squared_dist < @radius ** 2 
+    return squared_dist <= @radius ** 2 
   end
 
 end

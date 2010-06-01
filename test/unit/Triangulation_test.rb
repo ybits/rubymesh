@@ -17,7 +17,7 @@ class TriangleTest < Test::Unit::TestCase
   def test_a_thousand
     points = []
     (1..1000).each do |index|
-      points.push(Point.new(rand(1000), rand(1000)))
+      points.push(Point.new(rand(1000).to_f, rand(1000).to_f))
     end
     points.uniq!
     Triangulation.triangulate(points)
