@@ -42,15 +42,19 @@ class Triangle < Array
   end
 
   def to_s
-    "[#{@p1},#{@p2},#{@p3}]"
+    "[#{p1},#{p2},#{p3}]"
   end
 
   def centroid
-    return (@p1 + @p2 + @p3) / 3
+    return (p1 + p2 + p3) / 3.0
   end
 
   def edges
-    return [Edge.new(@p1, @p2), Edge.new(@p2, @p3), Edge.new(@p3, @p1)]    
+    return [
+      Edge.new(self[0], self[1]), 
+      Edge.new(self[1], self[2]), 
+      Edge.new(self[2], self[0])
+    ]    
   end
 
   def adjacent? other
@@ -82,13 +86,13 @@ class Triangle < Array
   end
 
   def circumcircle
-    if !@circumcircle.nil?
-      return @circumcircle
-    end
+    #if !@circumcircle.nil?
+    #  return @circumcircle
+    #end
   
     center = circumcenter
     radius = circumcircle_radius(center)
-    @circumcircle = Circle.new(center, radius)
+    Circle.new(center, radius)
   end
 
   private
@@ -98,9 +102,9 @@ class Triangle < Array
     end
 
     def circumcircle_radius center
-      puts "Self: #{self}"
-      puts "Center: #{center}"
-      Math.sqrt((@p1.x - center.x)**2 + (@p1.y - center.y)**2) 
+      #puts "Self: #{self}"
+      #puts "Center: #{center}"
+      Math.sqrt((p1.x - center.x)**2.0 + (p1.y - center.y)**2.0) 
     end
 
     def circumcenter
@@ -108,29 +112,31 @@ class Triangle < Array
     end
 
     def circumcenter_denominator
-      denominator = 2 * 
+      denominator = 2.0 * 
         (
-          (@p1.x * (@p2.y - @p3.y)) +
-          (@p2.x * (@p3.y - @p1.y)) + 
-          (@p3.x * (@p1.y - @p2.y))
+          (p1.x * (p2.y - p3.y)) +
+          (p2.x * (p3.y - p1.y)) + 
+          (p3.x * (p1.y - p2.y))
         )
     end
 
     def circumcenter_x
+      exp = 2.0
       circumcenter_x = 
         (
-          (@p1.y**2 + @p1.x**2) * (@p2.y - @p3.y) +
-          (@p2.y**2 + @p2.x**2) * (@p3.y - @p1.y) +
-          (@p3.y**2 + @p3.x**2) * (@p1.y - @p2.y)
+          (p1.y**exp + p1.x**exp) * (p2.y - p3.y) +
+          (p2.y**exp + p2.x**exp) * (p3.y - p1.y) +
+          (p3.y**exp + p3.x**exp) * (p1.y - p2.y)
         ) / circumcenter_denominator 
     end
 
     def circumcenter_y
+      exp = 2.0
       circumcenter_y = 
         (
-          (@p1.y**2 + @p1.x**2) * (@p3.x - @p2.x) +
-          (@p2.y**2 + @p2.x**2) * (@p1.x - @p3.x) +
-          (@p3.y**2 + @p3.x**2) * (@p2.x - @p1.x)
+          (p1.y**exp + p1.x**exp) * (p3.x - p2.x) +
+          (p2.y**exp + p2.x**exp) * (p1.x - p3.x) +
+          (p3.y**exp + p3.x**exp) * (p2.x - p1.x)
         ) / circumcenter_denominator 
     end
 

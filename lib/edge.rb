@@ -47,7 +47,7 @@ class Edge < Array
   end
 
   def to_s
-    "[#{@p1},#{@p2}]"
+    "[#{p1},#{p2}]"
   end
 
 end

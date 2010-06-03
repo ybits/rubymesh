@@ -17,9 +17,8 @@ class TriangleTest < Test::Unit::TestCase
   def test_a_thousand
     points = []
     (1..1000).each do |index|
-      points.push(Point.new(rand(1000).to_f, rand(1000).to_f))
+      points.push(Point.new(rand(5000).to_f, rand(5000).to_f))
     end
-    points.uniq!
     Triangulation.triangulate(points)
   end
 
@@ -119,6 +118,25 @@ class TriangleTest < Test::Unit::TestCase
     assert !edges.include?(e1)
     assert !edges.include?(e2)
     assert edges.include?(e3)
+  end
+
+  def test_add_edges_of_triangle
+    e1 = Edge.new(Point.new(1,1), Point.new(1,2))
+    t1 = Triangle.new(
+      Point.new(1,1),
+      Point.new(1,2),
+      Point.new(2,1)
+    )
+    t2 = Triangle.new(
+      Point.new(1,1),
+      Point.new(1,2),
+      Point.new(2,1)
+    )
+    edges = {e1.sort.to_s => e1}
+    edges = Triangulation.add_edges_of t1, edges
+    edges = Triangulation.add_edges_of t2, edges
+
+    assert !edges.key?(e1.sort.to_s)
   end
 
 end 

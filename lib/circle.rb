@@ -6,7 +6,7 @@ class Circle
 
   def initialize center, radius
     @center = center
-    @radius = radius
+    @radius = radius.to_f
   end
 
   def == other
@@ -14,8 +14,8 @@ class Circle
   end
 
   def circumscribes? point
-    squared_dist = (@center.x - point.x) ** 2 + (center.y - point.y) ** 2
-    return squared_dist <= @radius ** 2 
+    squared_dist = (@center.x - point.x) ** 2.0 + (center.y - point.y) ** 2.0
+    return squared_dist <= @radius ** 2.0
   end
 
 end

@@ -9,9 +9,9 @@ class Point
     raise InvalidArgument unless x.is_a?(Numeric)
     raise InvalidArgument unless y.is_a?(Numeric)
     raise InvalidArgument unless z.is_a?(Numeric)
-    @x = x
-    @y = y
-    @z = z  
+    @x = x.to_f
+    @y = y.to_f
+    @z = z.to_f
   end
 
   def + other
@@ -46,7 +46,7 @@ class Point
   end
   
   def to_s
-    "(#{@x},#{@y},#{@z})"
+    "(#{@x},#{@y})"
   end
 
   private

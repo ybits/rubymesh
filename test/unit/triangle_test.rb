@@ -97,9 +97,17 @@ class TriangleTest < Test::Unit::TestCase
       Point.new(2,1,0)  
     )
     radius2 = Math.sqrt(2)
+    
+    t3 = Triangle.new(
+      Point.new(1.0,3.0),
+      Point.new(7.0,-3.0),
+      Point.new(9.0,5.0)  
+    )
+    radius2 = Math.sqrt(2.0)
   
-    assert Circle.new(Point.new(0,0), radius1), t1.circumcircle
-    assert Circle.new(Point.new(1,1), radius2), t2.circumcircle
+#    assert_equal Circle.new(Point.new(0,0), radius1), t1.circumcircle
+#    assert_equal Circle.new(Point.new(1,1), radius2), t2.circumcircle
+    assert_equal Point.new(17.0/3.0,5.0/3.0), t3.circumcircle.center
   end
 
   def test_edges
