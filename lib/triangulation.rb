@@ -124,4 +124,24 @@ class Triangulation
     )
   end
 
+  def self.spanning_tree triangles
+    edge_list = self.build_spanning_tree_edge_list triangles
+  end
+
+  def spanning_tree_edge_list triangles
+    edge_list = triangles.inject({}) do |h,triangle| 
+      edges = triangle.edges
+      edges.each do |edge|
+        key = edge.sort.to_s
+        if h.key?(key)
+          h[key].push(triangle)
+        else
+          h[key] = [triangle]
+        end
+      end 
+      h
+    end 
+    edge_list
+  end
+
 end

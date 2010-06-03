@@ -23,6 +23,16 @@ class TriangleTest < Test::Unit::TestCase
     puts "Got #{triangles.size} triangles"
   end
 
+  def test_spanning_tree
+    points = []
+    (1..100).each do |index|
+      points.push(Point.new(rand(5000).to_f, rand(5000).to_f))
+    end
+    triangles = Triangulation.triangulate(points)
+    edges = Triangulation.spanning_tree triangles
+    puts edges.inspect
+  end
+
   def test_remove_triangles_incident_to_super_triangle
     t1 = Triangle.new(
       Point.new(1,1),
