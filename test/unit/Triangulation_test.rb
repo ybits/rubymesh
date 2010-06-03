@@ -14,44 +14,13 @@ class TriangleTest < Test::Unit::TestCase
     Triangulation.triangulate(points)
   end
   
-  def test_a_thousand
+  def test_a_bunch
     points = []
-    (1..1000).each do |index|
+    (1..100).each do |index|
       points.push(Point.new(rand(5000).to_f, rand(5000).to_f))
     end
-    Triangulation.triangulate(points)
-  end
-
-  def test_remove_triangles
-    t1 = Triangle.new(
-      Point.new(1,1),
-      Point.new(2,2),
-      Point.new(3.3)
-    )
-    t2 = Triangle.new(
-      Point.new(1,1),
-      Point.new(2,4),
-      Point.new(3.3)
-    )
-    t3 = Triangle.new(
-      Point.new(3,1),
-      Point.new(2,2),
-      Point.new(3.5)
-    )
-    t4 = Triangle.new(
-      Point.new(1,7),
-      Point.new(2,2),
-      Point.new(9.3)
-    )
-    triangles = [t1, t2, t3, t4]
-    triangles_to_remove = [t2, t4]
-
-    triangles = Triangulation.remove_triangles(triangles, triangles_to_remove)
-
-    assert triangles.include?(t1)
-    assert triangles.include?(t3)
-    assert !triangles.include?(t2)
-    assert !triangles.include?(t4)
+    triangles = Triangulation.triangulate(points)
+    puts "Got #{triangles.size} triangles"
   end
 
   def test_remove_triangles_incident_to_super_triangle
@@ -74,13 +43,18 @@ class TriangleTest < Test::Unit::TestCase
       Point.new(1,1),
       Point.new(2,4),
       Point.new(3.5)
-    )
-    triangles = [super_triangle, t1, t2, t3]
+    ) 
+    triangles = {
+      super_triangle.sort.to_s => super_triangle,
+      t1.sort.to_s => t1,
+      t2.sort.to_s => t2,
+      t3.sort.to_s => t3,
+    }
     
     triangles = Triangulation.remove_triangles_incident_to_super_triangle(
       triangles, 
       super_triangle
-    )
+    ).values
 
     assert !triangles.include?(t1)
     assert !triangles.include?(t2)
@@ -88,25 +62,6 @@ class TriangleTest < Test::Unit::TestCase
     assert triangles.include?(t3)
   end
   
-  def test_remove_vertices_of_super_triangle
-    vertices = [
-      Point.new(5.5, 3.333),
-      Point.new(2.3, 12.3),
-      Point.new(11, 0)
-    ]
-    
-    super_triangle = Triangulation.super_triangle vertices
-    vertices.push(super_triangle.p1, super_triangle.p2, super_triangle.p3)
-    vertices = Triangulation.remove_vertices_of_super_triangle vertices
-    
-    assert vertices.include?(Point.new(5.5, 3.333))
-    assert vertices.include?(Point.new(2.3, 12.3))
-    assert vertices.include?(Point.new(11, 0))
-    assert !vertices.include?(super_triangle.p1)
-    assert !vertices.include?(super_triangle.p2)
-    assert !vertices.include?(super_triangle.p3)
-  end
-
   def test_remove_duplicate_edges
     e1 = Edge.new(Point.new(1,1), Point.new(1,2))
     e2 = Edge.new(Point.new(1,2), Point.new(1,1))
@@ -120,23 +75,5 @@ class TriangleTest < Test::Unit::TestCase
     assert edges.include?(e3)
   end
 
-  def test_add_edges_of_triangle
-    e1 = Edge.new(Point.new(1,1), Point.new(1,2))
-    t1 = Triangle.new(
-      Point.new(1,1),
-      Point.new(1,2),
-      Point.new(2,1)
-    )
-    t2 = Triangle.new(
-      Point.new(1,1),
-      Point.new(1,2),
-      Point.new(2,1)
-    )
-    edges = {e1.sort.to_s => e1}
-    edges = Triangulation.add_edges_of t1, edges
-    edges = Triangulation.add_edges_of t2, edges
-
-    assert !edges.key?(e1.sort.to_s)
-  end
 
 end 

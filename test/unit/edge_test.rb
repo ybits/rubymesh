@@ -51,6 +51,6 @@ class EdgeTest < Test::Unit::TestCase
     p2 = Point.new(2,2)
     edge = Edge.new(p1, p2)
 
-    assert_equal "[(1,1,0),(2,2,0)]", edge.to_s
+    assert_equal "[(1.0,1.0,0.0),(2.0,2.0,0.0)]", edge.to_s
   end
 end

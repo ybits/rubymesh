@@ -112,7 +112,7 @@ class PointTest < Test::Unit::TestCase
 
   def test_to_string
     p1 = Point.new(1,2,3)
-    assert_equal "(1,2,3)", p1.to_s
+    assert_equal "(1.0,2.0,3.0)", p1.to_s
   end
 
 end

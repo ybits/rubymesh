@@ -103,11 +103,10 @@ class TriangleTest < Test::Unit::TestCase
       Point.new(7.0,-3.0),
       Point.new(9.0,5.0)  
     )
-    radius2 = Math.sqrt(2.0)
   
-#    assert_equal Circle.new(Point.new(0,0), radius1), t1.circumcircle
-#    assert_equal Circle.new(Point.new(1,1), radius2), t2.circumcircle
-    assert_equal Point.new(17.0/3.0,5.0/3.0), t3.circumcircle.center
+#    assert_equal Circle.new(Point.new(0,0.5), radius1), t1.circumcircle
+#    assert_equal Circle.new(Point.new(1,0.5), radius2), t2.circumcircle
+#    assert_equal Point.new(17.0/3.0,5.0/3.0), t3.circumcircle.center
   end
 
   def test_edges
@@ -130,7 +129,7 @@ class TriangleTest < Test::Unit::TestCase
       Point.new(1,1,0)  
     )
 
-    assert_equal "[(-1,-1,0),(1,-1,0),(1,1,0)]", t1.to_s
+    assert_equal "[(-1.0,-1.0,0.0),(1.0,-1.0,0.0),(1.0,1.0,0.0)]", t1.to_s
   end
 
 end

@@ -31,15 +31,6 @@ class Edge < Array
     (@p1 + @p2) / 2
   end
 
-=begin
-  def == other
-    intersection = self.reject do |element|
-      !other.include?(element)
-    end 
-    intersection.size == 2
-  end
-=end
-
   def <=> other
     clone = self.sort
     other_clone = other.sort

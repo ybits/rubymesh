@@ -41,10 +41,7 @@ class Triangulation
     triangles = {}
     triangles[super_triangle.sort.to_s] = super_triangle
   
-    vc = 0 
- 
     vertices.each do |vertex|
-      vc += 1
       edges = []
       triangles_to_delete = []
       triangles.each do |key, triangle|
@@ -54,30 +51,21 @@ class Triangulation
             triangles[key].finished = true
           end
           if circumcircle.circumscribes?(vertex)
-            #edges = self.add_edges_of triangle, edges
-            edges.push(Edge.new(triangle[0], triangle[1]))
-            edges.push(Edge.new(triangle[1], triangle[2]))
-            edges.push(Edge.new(triangle[2], triangle[0]))
+            edges += triangle.edges
             triangles_to_delete.push(key)
           end
         end
       end
-      #puts "In on setting"
-      #puts "There are #{vc} vertices in the trianglulation"
-      #puts "Removing #{triangles_to_delete.size} triangles from #{triangles.size}"
+
       triangles_to_delete.each do |key|
         triangles.delete(key)
       end
-      #puts "Now there are #{triangles.size} triangles"
 
       edges = self.remove_duplicate_edges(edges)
-      #puts "About to add #{edges.size} triangles"
       edges.each do |edge|
-        # How can vertex BE in the in edge???
         new_triangle = Triangle.new(edge[0], edge[1], vertex)
         triangles[new_triangle.sort.to_s] = new_triangle
       end
-      #puts "Now there are #{triangles.size} triangles"
     end
    
     triangles = self.remove_triangles_incident_to_super_triangle(
@@ -85,72 +73,29 @@ class Triangulation
       super_triangle
     )
 
-    puts "Count of vertices list: #{vertices.size}"
-    puts "Count of final triangles: #{triangles.size}"
+    triangles.values
   end
 
-  def self.add_edges_of triangle, edges
-    triangle_edges = triangle.edges
-    keys_to_delete = []
-    triangle.edges.each do |edge|
-      key = edge.sort.to_s
-      if edges.key?(key)
-        keys_to_delete.push(key)
-      end
-        edges[key] = edge
-    end
-
-    keys_to_delete.each do |key|
-      edges.delete(key)
-    end
-    edges
-  end
-
-  def self.remove_triangles triangles, triangles_to_remove
-    triangles.reject do |triangle|
-      triangles_to_remove.include?(triangle)
-    end
-  end
-
-  #FIXME THIS SUCKS.
   def self.remove_duplicate_edges edges
     counts = edges.inject(Hash.new(0)) {|h,x| h[x.sort.to_s]+=1;h}  
     edges = edges.reject do |edge| 
       key = edge.sort.to_s
       counts[key] > 1
     end
-    return edges
+    edges
   end
 
   def self.remove_triangles_incident_to_super_triangle triangles, super_triangle
-      
     t_list = triangles.values
-
     t_list.each do |t|
       if t.include?(super_triangle.p1) or
          t.include?(super_triangle.p2) or
          t.include?(super_triangle.p3)
         triangles.delete(t.sort.to_s)
-        #puts "removing something"
       end
-    end
-
-    return triangles
-
-    triangles = triangles.reject do |key, triangle|
-      triangle.include?(super_triangle.p1) or
-      triangle.include?(super_triangle.p2) or
-      triangle.include?(super_triangle.p3)
     end
     triangles
   end 
-
-  def self.remove_vertices_of_super_triangle vertices
-    vertices.pop
-    vertices.pop
-    vertices.pop
-    vertices
-  end
 
   def self.super_triangle vertices
     x_min = vertices[0].x
