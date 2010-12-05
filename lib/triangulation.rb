@@ -1,6 +1,8 @@
 require_relative 'triangle'
 
 =begin
+The algorithm being implemented...
+
 subroutine triangulate
 input : vertex list
 output : triangle list
@@ -38,64 +40,52 @@ class Triangulation
     vertices.sort!
     super_triangle = self.super_triangle vertices
     
-    triangles = {}
-    triangles[super_triangle.sort.to_s] = super_triangle
+    triangles = []
+    edges = []
+    triangles << super_triangle
   
     vertices.each do |vertex|
-      edges = []
-      triangles_to_delete = []
-      triangles.each do |key, triangle|
-        unless triangles[key].finished
+      edges.clear
+      triangles.delete_if do |triangle|
+        delete = false
+        unless triangle.finished
           circumcircle = triangle.circumcircle
           if circumcircle.center.x + circumcircle.radius < vertex.x
-            triangles[key].finished = true
+            triangle.finished = true
           end
           if circumcircle.circumscribes?(vertex)
             edges << Edge.new(triangle.p1, triangle.p2)
             edges << Edge.new(triangle.p2, triangle.p3)
             edges << Edge.new(triangle.p3, triangle.p1)
-            triangles_to_delete.push(key)
+            delete = true
           end
         end
-      end
-
-      triangles_to_delete.each do |key|
-        triangles.delete(key)
+        delete  
       end
 
       while !edges.empty?
         edge = edges.shift
         rejected = edges.reject! {|e| e == edge}
         if rejected.nil?
-          new_triangle = Triangle.new(edge[0], edge[1], vertex)
-          triangles[new_triangle.sort.to_s] = new_triangle
+          triangles << Triangle.new(edge.p1, edge.p2, vertex)
         end
       end 
     
     end
 
+    super_triangle_vertices = [super_triangle.p1, 
+      super_triangle.p2, 
+      super_triangle.p3
+    ]
 
-    
-
-    triangles = self.remove_triangles_incident_to_super_triangle(
-      triangles,
-      super_triangle
-    )
-
-    triangles.values
-  end
-
-  def self.remove_triangles_incident_to_super_triangle triangles, super_triangle
-    t_list = triangles.values
-    t_list.each do |t|
-      if t.include?(super_triangle.p1) or
-         t.include?(super_triangle.p2) or
-         t.include?(super_triangle.p3)
-        triangles.delete(t.sort.to_s)
-      end
+    triangles.delete_if do |triangle| 
+      (super_triangle_vertices.include?(triangle.p1) || 
+      super_triangle_vertices.include?(triangle.p2) || 
+      super_triangle_vertices.include?(triangle.p3)) 
     end
+
     triangles
-  end 
+  end
 
   def self.super_triangle vertices
     x_min = vertices[0].x

@@ -50,7 +50,6 @@ class Triangle < Struct.new(:p1, :p2, :p3)
 
   def circumcircle
     if !@circumcircle.nil?
-      puts "Cached"
       return @circumcircle
     end
   
