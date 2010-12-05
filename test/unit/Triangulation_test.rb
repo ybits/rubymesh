@@ -12,7 +12,8 @@ class TriangulationTest < Test::Unit::TestCase
       Point.new(3.0,3.0),
       Point.new(5.0, 3.5)
     ]
-    Triangulation.triangulate(points)
+    t = Delaunay::Triangulation.new(points)
+    t.triangulate
   end
   
   def test_a_bunch
@@ -20,7 +21,8 @@ class TriangulationTest < Test::Unit::TestCase
     (1..1000).each do |index|
       points.push(Point.new(rand(5000).to_f, rand(5000).to_f))
     end
-    triangles = Triangulation.triangulate(points)
+    t = Delaunay::Triangulation.new(points)
+    triangles = t.triangulate
     puts "Got #{triangles.size} triangles"
   end
 
@@ -29,61 +31,10 @@ class TriangulationTest < Test::Unit::TestCase
     (1..100).each do |index|
       points.push(Point.new(rand(5000).to_f, rand(5000).to_f))
     end
-    triangles = Triangulation.triangulate(points)
-    edges = Triangulation.spanning_tree triangles
-    puts edges.inspect
-  end
-
-  def test_remove_triangles_incident_to_super_triangle
-    t1 = Triangle.new(
-      Point.new(1,1),
-      Point.new(2,2),
-      Point.new(3.3)
-    )
-    t2 = Triangle.new(
-      Point.new(1,1),
-      Point.new(2,4),
-      Point.new(3.3)
-    )
-    t3 = Triangle.new(
-      Point.new(1,2),
-      Point.new(2,5),
-      Point.new(3.4)
-    )
-    super_triangle = Triangle.new(
-      Point.new(1,1),
-      Point.new(2,4),
-      Point.new(3.5)
-    ) 
-    triangles = {
-      super_triangle.sort.to_s => super_triangle,
-      t1.sort.to_s => t1,
-      t2.sort.to_s => t2,
-      t3.sort.to_s => t3,
-    }
-    
-    triangles = Triangulation.remove_triangles_incident_to_super_triangle(
-      triangles, 
-      super_triangle
-    ).values
-
-    assert !triangles.include?(t1)
-    assert !triangles.include?(t2)
-    assert !triangles.include?(super_triangle)
-    assert triangles.include?(t3)
-  end
-  
-  def test_remove_duplicate_edges
-    e1 = Edge.new(Point.new(1,1), Point.new(1,2))
-    e2 = Edge.new(Point.new(1,2), Point.new(1,1))
-    e3 = Edge.new(Point.new(2,1), Point.new(1,2))
-    edges = [e1, e2, e3]
-
-    edges = Triangulation.remove_duplicate_edges edges
-
-    assert !edges.include?(e1)
-    assert !edges.include?(e2)
-    assert edges.include?(e3)
+    t = Delaunay::Triangulation.new(points)
+    triangles = t.triangulate
+    #edges = Triangulation.spanning_tree triangles
+    #puts edges.inspect
   end
 
 
