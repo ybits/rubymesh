@@ -1,4 +1,4 @@
-require 'lib/tree'
+require_relative 'tree'
 
 class Tree
 

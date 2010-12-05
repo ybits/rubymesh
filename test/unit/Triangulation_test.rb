@@ -1,7 +1,8 @@
 require 'test/unit'
+require_relative '../test_helper'
 require 'lib/triangulation'
 
-class TriangleTest < Test::Unit::TestCase
+class TriangulationTest < Test::Unit::TestCase
 
   def test_initialize
     points = [
@@ -16,7 +17,7 @@ class TriangleTest < Test::Unit::TestCase
   
   def test_a_bunch
     points = []
-    (1..100).each do |index|
+    (1..1000).each do |index|
       points.push(Point.new(rand(5000).to_f, rand(5000).to_f))
     end
     triangles = Triangulation.triangulate(points)

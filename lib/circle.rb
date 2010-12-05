@@ -1,4 +1,4 @@
-require 'lib/point'
+require_relative 'point'
 
 class Circle
   

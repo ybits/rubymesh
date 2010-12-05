@@ -1,4 +1,4 @@
-require 'lib/triangle'
+require_relative 'triangle'
 
 =begin
 subroutine triangulate
@@ -51,7 +51,9 @@ class Triangulation
             triangles[key].finished = true
           end
           if circumcircle.circumscribes?(vertex)
-            edges += triangle.edges
+            edges << Edge.new(triangle.p1, triangle.p2)
+            edges << Edge.new(triangle.p2, triangle.p3)
+            edges << Edge.new(triangle.p3, triangle.p1)
             triangles_to_delete.push(key)
           end
         end
@@ -61,28 +63,26 @@ class Triangulation
         triangles.delete(key)
       end
 
-      edges = self.remove_duplicate_edges(edges)
-      edges.each do |edge|
-        new_triangle = Triangle.new(edge[0], edge[1], vertex)
-        triangles[new_triangle.sort.to_s] = new_triangle
-      end
+      while !edges.empty?
+        edge = edges.shift
+        rejected = edges.reject! {|e| e == edge}
+        if rejected.nil?
+          new_triangle = Triangle.new(edge[0], edge[1], vertex)
+          triangles[new_triangle.sort.to_s] = new_triangle
+        end
+      end 
+    
     end
-   
+
+
+    
+
     triangles = self.remove_triangles_incident_to_super_triangle(
       triangles,
       super_triangle
     )
 
     triangles.values
-  end
-
-  def self.remove_duplicate_edges edges
-    counts = edges.inject(Hash.new(0)) {|h,x| h[x.sort.to_s]+=1;h}  
-    edges = edges.reject do |edge| 
-      key = edge.sort.to_s
-      counts[key] > 1
-    end
-    edges
   end
 
   def self.remove_triangles_incident_to_super_triangle triangles, super_triangle

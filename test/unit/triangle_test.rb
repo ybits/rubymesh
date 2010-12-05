@@ -1,4 +1,5 @@
 require 'test/unit'
+require_relative '../test_helper'
 require 'lib/triangle'
 
 class TriangleTest < Test::Unit::TestCase

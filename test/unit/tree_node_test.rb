@@ -1,4 +1,5 @@
 require 'test/unit'
+require_relative '../test_helper'
 require 'lib/tree_node'
 
 class TreeNodeTest< Test::Unit::TestCase

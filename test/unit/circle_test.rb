@@ -1,5 +1,5 @@
 require 'test/unit'
-require 'lib/circle'
+require_relative '../test_helper'
 
 class CircleTest < Test::Unit::TestCase
   
