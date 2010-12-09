@@ -63,7 +63,8 @@ module Delaunay
     end
 
     def spanning_tree triangles
-      spanning_tree_edge_list triangles
+      adjacency_list = triangle_adjacency_list triangles
+      spanning_tree_edge_list adjacency_list, triangles
     end
 
   private
@@ -95,45 +96,42 @@ module Delaunay
       )
     end
 
-    def spanning_tree_edge_list triangles
-      edge_list = {}
+    def triangle_adjacency_list triangles
+      adjacency_list = {}
       triangles.each_with_index do |triangle, index| 
         edges = triangle.edges
         edges.each do |edge|
           key = edge.sort.to_s
-          edge_list[key] = [] unless edge_list.key?(key)
-          edge_list[key] << index 
+          adjacency_list[key] = [] unless adjacency_list.key?(key)
+          adjacency_list[key] << index 
         end 
       end 
-      edge_list
+      adjacency_list
+    end
 
+    def spanning_tree_edge_list adjacency_list, triangles
       triangle_queue = [0]
-      final_edges = []
-      queue_counter = 0
-      queue_size = 1
-      while queue_counter < queue_size do 
-        queue_index = triangle_queue[queue_counter]
+      spanning_tree_edges = []
+      triangle_queue.each do |queue_index|  
         triangle = triangles[queue_index]
         edges = triangle.edges
         edges.each do |edge|
           key = edge.sort.to_s
-          adjacencies = edge_list[key]
+          adjacencies = adjacency_list[key]
           adjacencies.each do |adjacent_index|
             unless adjacent_index == queue_index
               adjacent_triangle = triangles[adjacent_index]
               if adjacent_triangle.visited.nil?
                 triangle_queue << adjacent_index
-                queue_size += 1
                 adjacent_triangle.visited = true
-                final_edges << Edge.new(triangle.centroid, adjacent_triangle.centroid)
+                spanning_tree_edges << Edge.new(triangle.centroid, adjacent_triangle.centroid)
               end
             end
           end
         end   
-        queue_counter += 1
         triangle.visited = true
       end
-      final_edges
+      spanning_tree_edges
     end
 
   end
