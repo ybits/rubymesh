@@ -9,11 +9,11 @@ class Triangle < Struct.new(:p1, :p2, :p3)
   end
 
   def centroid
-    return (p1 + p2 + p3) / 3.0
+    @centroid ||= (p1 + p2 + p3) / 3.0
   end
 
   def edges
-    return [
+    [
       Edge.new(self[0], self[1]), 
       Edge.new(self[1], self[2]), 
       Edge.new(self[2], self[0])
@@ -25,6 +25,13 @@ class Triangle < Struct.new(:p1, :p2, :p3)
       !other.include?(element)
     end
     intersection.length == 2
+  end
+
+  def coincident? other
+    self.each do |element|
+      return true if other.include?(element)
+    end
+    false
   end
 
 =begin
@@ -49,14 +56,12 @@ class Triangle < Struct.new(:p1, :p2, :p3)
   end
 
   def circumcircle
-    if !@circumcircle.nil?
+    unless @circumcircle.nil?
       return @circumcircle
     end
   
     center = circumcenter
-    radius = circumcircle_radius(center)
-    @circumcircle = Circle.new(center, radius)
-    @circumcircle
+    @circumcircle = Circle.new(center, circumcircle_radius(center))
   end
 
   private
@@ -76,7 +81,7 @@ class Triangle < Struct.new(:p1, :p2, :p3)
     end
 
     def circumcenter_denominator
-      denominator = 2.0 * 
+      2.0 * 
         (
           (p1.x * (p2.y - p3.y)) +
           (p2.x * (p3.y - p1.y)) + 
@@ -86,22 +91,20 @@ class Triangle < Struct.new(:p1, :p2, :p3)
 
     def circumcenter_x
       exp = 2.0
-      circumcenter_x = 
-        (
-          (p1.y**exp + p1.x**exp) * (p2.y - p3.y) +
-          (p2.y**exp + p2.x**exp) * (p3.y - p1.y) +
-          (p3.y**exp + p3.x**exp) * (p1.y - p2.y)
-        ) / circumcenter_denominator 
+      (
+        (p1.y**exp + p1.x**exp) * (p2.y - p3.y) +
+        (p2.y**exp + p2.x**exp) * (p3.y - p1.y) +
+        (p3.y**exp + p3.x**exp) * (p1.y - p2.y)
+      ) / circumcenter_denominator 
     end
 
     def circumcenter_y
       exp = 2.0
-      circumcenter_y = 
-        (
-          (p1.y**exp + p1.x**exp) * (p3.x - p2.x) +
-          (p2.y**exp + p2.x**exp) * (p1.x - p3.x) +
-          (p3.y**exp + p3.x**exp) * (p2.x - p1.x)
-        ) / circumcenter_denominator 
+      (
+        (p1.y**exp + p1.x**exp) * (p3.x - p2.x) +
+        (p2.y**exp + p2.x**exp) * (p1.x - p3.x) +
+        (p3.y**exp + p3.x**exp) * (p2.x - p1.x)
+      ) / circumcenter_denominator 
     end
 
 end
