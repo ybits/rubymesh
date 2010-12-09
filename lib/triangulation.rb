@@ -103,26 +103,24 @@ module Delaunay
         edges.each do |edge|
           key = edge.sort.to_s
           adjacency_list[key] = [] unless adjacency_list.key?(key)
-          adjacency_list[key] << index 
+          adjacency_list[key] << triangle 
         end 
       end 
       adjacency_list
     end
 
     def spanning_tree_edge_list adjacency_list, triangles
-      triangle_queue = [0]
+      triangle_queue = [triangles.first]
       spanning_tree_edges = []
-      triangle_queue.each do |queue_index|  
-        triangle = triangles[queue_index]
+      triangle_queue.each do |triangle|  
         edges = triangle.edges
         edges.each do |edge|
           key = edge.sort.to_s
           adjacencies = adjacency_list[key]
-          adjacencies.each do |adjacent_index|
-            unless adjacent_index == queue_index
-              adjacent_triangle = triangles[adjacent_index]
+          adjacencies.each do |adjacent_triangle|
+            unless adjacent_triangle == triangle 
               if adjacent_triangle.visited.nil?
-                triangle_queue << adjacent_index
+                triangle_queue << adjacent_triangle
                 adjacent_triangle.visited = true
                 spanning_tree_edges << Edge.new(triangle.centroid, adjacent_triangle.centroid)
               end
