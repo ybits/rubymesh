@@ -1,7 +1,7 @@
 require_relative 'triangle'
 
 class Triangle
-  attr_accessor :finished
+  attr_accessor :finished, :visited
 end
 
 module Delaunay
@@ -56,12 +56,14 @@ module Delaunay
       ]
 
       self.triangles.delete_if do |triangle| 
-        (super_triangle_vertices.include?(triangle.p1) || 
-        super_triangle_vertices.include?(triangle.p2) || 
-        super_triangle_vertices.include?(triangle.p3)) 
+        super_triangle.coincident? triangle
       end
 
       self.triangles
+    end
+
+    def spanning_tree triangles
+      spanning_tree_edge_list triangles
     end
 
   private
@@ -86,31 +88,52 @@ module Delaunay
       change_in_y = y_max - y_min
       max_change = [change_in_x, change_in_y].max
 
-      triangle = Triangle.new(
+      Triangle.new(
         Point.new(x_mid - max_change*2, y_mid - max_change),
         Point.new(x_mid, y_mid + max_change*2),
         Point.new(x_mid + max_change*2, y_mid - max_change)
       )
     end
 
-    def spanning_tree triangles
-      edge_list = self.build_spanning_tree_edge_list triangles
-    end
-
     def spanning_tree_edge_list triangles
-      edge_list = triangles.inject({}) do |h,triangle| 
+      edge_list = {}
+      triangles.each_with_index do |triangle, index| 
         edges = triangle.edges
         edges.each do |edge|
           key = edge.sort.to_s
-          if h.key?(key)
-            h[key].push(triangle)
-          else
-            h[key] = [triangle]
-          end
+          edge_list[key] = [] unless edge_list.key?(key)
+          edge_list[key] << index 
         end 
-        h
       end 
       edge_list
+
+      triangle_queue = [0]
+      final_edges = []
+      queue_counter = 0
+      queue_size = 1
+      while queue_counter < queue_size do 
+        queue_index = triangle_queue[queue_counter]
+        triangle = triangles[queue_index]
+        edges = triangle.edges
+        edges.each do |edge|
+          key = edge.sort.to_s
+          adjacencies = edge_list[key]
+          adjacencies.each do |adjacent_index|
+            unless adjacent_index == queue_index
+              adjacent_triangle = triangles[adjacent_index]
+              if adjacent_triangle.visited.nil?
+                triangle_queue << adjacent_index
+                queue_size += 1
+                adjacent_triangle.visited = true
+                final_edges << Edge.new(triangle.centroid, adjacent_triangle.centroid)
+              end
+            end
+          end
+        end   
+        queue_counter += 1
+        triangle.visited = true
+      end
+      final_edges
     end
 
   end
