@@ -16,7 +16,7 @@ class TriangulationTest < Test::Unit::TestCase
     t.triangulate
   end
   
-  def test_a_bunch
+  def test_triangulation
     points = []
     (1..1000).each do |index|
       points.push(Point.new(rand(5000).to_f, rand(5000).to_f))
@@ -28,13 +28,13 @@ class TriangulationTest < Test::Unit::TestCase
 
   def test_spanning_tree
     points = []
-    (1..100).each do |index|
+    (1..10).each do |index|
       points.push(Point.new(rand(5000).to_f, rand(5000).to_f))
     end
     t = Delaunay::Triangulation.new(points)
     triangles = t.triangulate
-    #edges = Triangulation.spanning_tree triangles
-    #puts edges.inspect
+    edges = t.spanning_tree triangles
+    assert_equal triangles.size - 1, edges.size, "Spanning tree edges should be one less than triangles"
   end
 
 

@@ -4,6 +4,12 @@ class Triangle
   attr_accessor :finished, :visited
 end
 
+class Edge
+  def hash
+    self.sort.to_s
+  end
+end
+
 module Delaunay
   class Triangulation 
 
@@ -50,11 +56,6 @@ module Delaunay
       
       end
 
-      super_triangle_vertices = [super_triangle.p1, 
-        super_triangle.p2, 
-        super_triangle.p3
-      ]
-
       self.triangles.delete_if do |triangle| 
         super_triangle.coincident? triangle
       end
@@ -98,10 +99,10 @@ module Delaunay
 
     def triangle_adjacency_list triangles
       adjacency_list = {}
-      triangles.each_with_index do |triangle, index| 
+      triangles.each do |triangle| 
         edges = triangle.edges
         edges.each do |edge|
-          key = edge.sort.to_s
+          key = edge.hash
           adjacency_list[key] = [] unless adjacency_list.key?(key)
           adjacency_list[key] << triangle 
         end 
@@ -115,7 +116,7 @@ module Delaunay
       triangle_queue.each do |triangle|  
         edges = triangle.edges
         edges.each do |edge|
-          key = edge.sort.to_s
+          key = edge.hash
           adjacencies = adjacency_list[key]
           adjacencies.each do |adjacent_triangle|
             unless adjacent_triangle == triangle 
