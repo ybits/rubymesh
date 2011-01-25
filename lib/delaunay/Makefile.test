@@ -1,0 +1,11 @@
+CC = cc
+CUNIT_FLAGS = -lcunit
+OBJS =  point.o edge.o triangle.o circle.o geom_test.o
+
+test: $(OBJS)
+	$(CC) $(OBJS) $(CUNIT_FLAGS) -o geom_test
+
+$(OBJS):
+ 
+clean:
+	rm *.o geom_test

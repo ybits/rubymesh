@@ -1,0 +1,221 @@
+#include <stdio.h>
+#include <string.h>
+#include "CUnit/Basic.h"
+#include "point.h"
+#include "edge.h"
+#include "circle.h"
+#include "triangle.h"
+
+int init_suite1(void)
+{
+	return 0;
+}
+
+int clean_suite1(void)
+{
+	return 0;
+}
+
+void test_point_creation(void)
+{
+	double x = 20.0;
+	double y = 30.0;
+	Point p = point_new(x,y);
+
+	CU_ASSERT(x == p.x) 
+	CU_ASSERT(y == p.y) 
+}
+
+void test_point_equality(void)
+{
+	double x = 20.0;
+	double y = 30.0;
+	Point p1 = point_new(x, y);
+	Point p2 = point_new(x, y);
+	Point p3 = point_new(x+1, y);
+	Point p4 = point_new(x, y+1);
+
+	CU_ASSERT(point_equals(&p1, &p2)); 
+	CU_ASSERT(!point_equals(&p1, &p3)); 
+	CU_ASSERT(!point_equals(&p1, &p4)); 
+}
+
+void testPOINT(void)
+{
+	test_point_creation();
+	test_point_equality();
+}
+
+void test_edge_creation(void)
+{
+	double x1 = 20.0;
+	double y1 = 30.0;
+	double x2 = 20.0;
+	double y2 = 30.0;
+	Point p1 = point_new(x1, y1);
+	Point p2 = point_new(x2, y2);
+	Edge e = edge_new(&p1, &p2);
+
+	CU_ASSERT(e.p1.x == x1);
+	CU_ASSERT(e.p1.y == y1);
+	CU_ASSERT(e.p2.x == x2);
+	CU_ASSERT(e.p2.y == y2);
+}
+
+void test_edge_equality(void)
+{
+	double x1 = 20.0;
+	double y1 = 30.0;
+	double x2 = 25.5;
+	double y2 = 33.3;
+	Point p1 = point_new(x1, y1);
+	Point p2 = point_new(x2, y2);
+	Point p3 = point_new(x1, y2);
+	Edge e1 = edge_new(&p1, &p2);
+	Edge e2 = edge_new(&p2, &p1);
+	Edge e3 = edge_new(&p1, &p3);
+	Edge e4 = edge_new(&p3, &p1);
+	CU_ASSERT(edge_equals(&e1, &e2));
+	CU_ASSERT(!edge_equals(&e1, &e3));
+	CU_ASSERT(!edge_equals(&e4, &e1));
+}
+
+void testEDGE(void)
+{
+	test_edge_creation();
+	test_edge_equality();
+}
+
+void test_circle_creation(void)
+{
+	double x = 1.0;
+	double y = 1.0;
+	double radius = 7.0;
+	Point p = point_new(x, y);
+	Circle c = circle_new(&p, radius);
+
+	CU_ASSERT(point_equals(&(c.center), &p));
+	CU_ASSERT(radius == c.radius);
+}
+
+void test_circle_equality(void)
+{
+	double x = 1.0;
+	double y = 2.0;
+	double radius = 7.0;
+	Point p1 = point_new(x, y);
+	Point p2 = point_new(y, x);
+	Circle c1 = circle_new(&p1, radius);
+	Circle c2 = circle_new(&p1, radius);
+	Circle c3 = circle_new(&p2, radius);
+	Circle c4 = circle_new(&p1, radius + 12);
+
+	CU_ASSERT(circle_equals(&c1, &c2));
+	CU_ASSERT(!circle_equals(&c1, &c3));
+	CU_ASSERT(!circle_equals(&c1, &c4));
+}
+
+void test_circle_circumscribes(void)
+{
+	double radius = 5.0;
+	Point p1 = point_new(0.0, 0.0);
+	Point inside_point = point_new(0.0, 1.0);
+	Point outside_point = point_new(10.0, 10.0);
+	Circle c1 = circle_new(&p1, radius);
+
+	CU_ASSERT(circle_circumscribes(&c1, &inside_point));
+	CU_ASSERT(!circle_circumscribes(&c1, &outside_point));
+}
+
+void testCIRCLE(void)
+{
+	test_circle_creation();
+	test_circle_equality();
+	test_circle_circumscribes();
+}
+
+void test_triangle_creation(void)
+{
+	Point p1 = point_new(1.0, 1.0);
+	Point p2 = point_new(2.0, 2.0);
+	Point p3 = point_new(3.0, 3.0);
+	Triangle t = triangle_new(&p1, &p2, &p3);
+
+	CU_ASSERT(point_equals(&p1, &(t.p1)));
+	CU_ASSERT(point_equals(&p2, &(t.p2)));
+	CU_ASSERT(point_equals(&p3, &(t.p3)));
+}
+
+void test_triangle_equality(void)
+{
+	Point p1 = point_new(1.0, 1.0);
+	Point p2 = point_new(2.0, 2.0);
+	Point p3 = point_new(3.0, 3.0);
+	Triangle t1 = triangle_new(&p1, &p2, &p3);
+
+	Point p4 = point_new(1.0, 1.0);
+	Point p5 = point_new(2.0, 2.0);
+	Point p6 = point_new(3.0, 3.0);
+	Triangle t2 = triangle_new(&p4, &p5, &p6);
+
+	Point p7 = point_new(1.0, 1.0);
+	Point p8 = point_new(2.0, 2.0);
+	Point p9 = point_new(3.0, 3.1);
+	Triangle t3 = triangle_new(&p7, &p8, &p9);
+
+	CU_ASSERT(triangle_equals(&t1, &t2));
+	CU_ASSERT(!triangle_equals(&t1, &t3));
+}
+
+void test_triangle_centroid(void)
+{
+	Point p1 = point_new(1.0, 1.0);
+	Point p2 = point_new(1.0, 1.0);
+	Point p3 = point_new(4.0, 4.0);
+	Point centroid = point_new(2.0, 2.0);
+	Triangle t = triangle_new(&p1, &p2, &p3);
+
+	CU_ASSERT(point_equals(&centroid, &(t.centroid)));
+}
+
+void testTRIANGLE(void)
+{
+	test_triangle_creation();
+	test_triangle_equality();
+	test_triangle_centroid();
+	/*test_circle_circumscribes();*/
+}
+
+int main()
+{
+   CU_pSuite pSuite = NULL;
+
+   /* initialize the CUnit test registry */
+   if (CUE_SUCCESS != CU_initialize_registry())
+      return CU_get_error();
+
+   /* add a suite to the registry */
+   pSuite = CU_add_suite("Suite_1", init_suite1, clean_suite1);
+   if (NULL == pSuite) {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
+
+   /* add the tests to the suite */
+   if ((NULL == CU_add_test(pSuite, "Test Point", testPOINT)) ||
+			(NULL == CU_add_test(pSuite, "Test Edge", testEDGE)) ||
+			(NULL == CU_add_test(pSuite, "Test Circle", testCIRCLE)) ||
+			(NULL == CU_add_test(pSuite, "Test Triangle", testTRIANGLE)))
+   {
+      CU_cleanup_registry();
+      return CU_get_error();
+   }
+
+   /* Run all tests using the CUnit Basic interface */
+   CU_basic_set_mode(CU_BRM_VERBOSE);
+   CU_basic_run_tests();
+   CU_cleanup_registry();
+   return CU_get_error();
+}
+
+
