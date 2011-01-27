@@ -47,12 +47,11 @@ int triangle_coincident_points(Triangle *t1, Triangle *t2)
 	return found;
 }
 
-int triangle_circumcircle(Triangle *t)
+Circle triangle_circumcircle(Triangle *t)
 {
-	if (NULL == t->circumcircle) {
-		Circle = c;
-		double center = triangle_circumcenter(t);
-		t->circumcircle = circle_new(&center, circumcircle_radius(&center));	
+	if (t->circumcircle.radius) {
+		Point center = triangle_circumcenter(t);
+		t->circumcircle = circle_new(&center, triangle_circumcircle_radius(t, &center));	
 	}
 	return t->circumcircle;
 }
@@ -78,9 +77,9 @@ double triangle_circumcenter_y(Triangle *t)
 	double exp = 2.0;
 	return	
 	(
-		(pow(t->p1.x, eyp) + pow(t->p1.y, eyp)) * (t->p2.x - t->p3.x) +
-		(pow(t->p2.x, eyp) + pow(t->p2.y, eyp)) * (t->p3.x - t->p1.x) +
-		(pow(t->p3.x, eyp) + pow(t->p3.y, eyp)) * (t->p1.x - t->p2.x)
+		(pow(t->p1.x, exp) + pow(t->p1.y, exp)) * (t->p2.x - t->p3.x) +
+		(pow(t->p2.x, exp) + pow(t->p2.y, exp)) * (t->p3.x - t->p1.x) +
+		(pow(t->p3.x, exp) + pow(t->p3.y, exp)) * (t->p1.x - t->p2.x)
 	)	/ triangle_circumcenter_denominator(t);
 }
 
@@ -94,7 +93,14 @@ double triangle_circumcenter_denominator(Triangle *t)
 	);
 }
 
-double triangle_circumcenter_radius(Triangle *t, Point *center)
+double triangle_circumcircle_radius(Triangle *t, Point *center)
 {
 	return sqrt(pow((t->p1.x - center->x), 2.0) + pow((t->p1.y - center->y), 2.0));
+}
+
+void triangle_edges(Triangle *t, Edge e[])
+{
+	e[0] = edge_new(&(t->p1), &(t->p2));
+	e[1] = edge_new(&(t->p2), &(t->p3));
+	e[2] = edge_new(&(t->p3), &(t->p1));
 }

@@ -5,6 +5,8 @@
 #include "edge.h"
 #include "circle.h"
 #include "triangle.h"
+#include "listnode.h"
+#include "list.h"
 
 int init_suite1(void)
 {
@@ -178,12 +180,76 @@ void test_triangle_centroid(void)
 	CU_ASSERT(point_equals(&centroid, &(t.centroid)));
 }
 
+void test_triangle_adjacent(void)
+{
+	Point p1 = point_new(1.0, 1.0);	
+	Point p2 = point_new(1.0, 2.0);	
+	Point p3 = point_new(4.0, 4.0);	
+	Point p4 = point_new(5.0, 5.0);	
+	Point p5 = point_new(5.0, 6.0);	
+	Triangle t1 = triangle_new(&p1, &p2, &p3);
+	Triangle t2 = triangle_new(&p1, &p2, &p4);
+	Triangle t3 = triangle_new(&p1, &p4, &p5);
+
+	CU_ASSERT(triangle_adjacent(&t1, &t2));
+	CU_ASSERT(!triangle_adjacent(&t1, &t3));
+}
+
+void test_triangle_edges(void)
+{
+	Point p1 = point_new(1.0, 1.0);
+	Point p2 = point_new(1.0, 2.0);
+	Point p3 = point_new(4.0, 4.0);
+	Edge e1 = edge_new(&p1, &p2);
+	Edge e2 = edge_new(&p2, &p3);
+	Edge e3 = edge_new(&p3, &p1);
+	Triangle t = triangle_new(&p1, &p2, &p3);
+	Edge edges[3];
+	triangle_edges(&t, edges);
+
+	CU_ASSERT(edge_equals(&e1, &(edges[0])));
+	CU_ASSERT(edge_equals(&e2, &(edges[1])));
+	CU_ASSERT(edge_equals(&e3, &(edges[2])));
+}
+
 void testTRIANGLE(void)
 {
 	test_triangle_creation();
 	test_triangle_equality();
 	test_triangle_centroid();
-	/*test_circle_circumscribes();*/
+	test_triangle_adjacent();
+	test_triangle_edges();
+}
+
+void test_listnode_creation(void)
+{
+	Point p1 = point_new(1.0, 1.1);
+	ListNode *node1 = listnode_new(&p1);
+	Point* p2 = (Point*)node1->value;
+	listnode_free(node1);
+	
+	CU_ASSERT(point_equals(&p1, p2));
+	Point p3 = point_new(2.0, 2.2);
+	Edge e1 = edge_new(&p1, &p3);
+	ListNode *node2 = listnode_new(&e1);
+	Edge* e2 = (Edge*)node2->value;
+	listnode_free(node2);
+	
+	CU_ASSERT(edge_equals(&e1, e2)); 
+}
+
+void testLISTNODE(void)
+{
+	test_listnode_creation();
+}
+
+void test_list_creation(void)
+{
+}
+
+void testLIST(void)
+{
+	test_list_creation();
 }
 
 int main()
@@ -205,7 +271,9 @@ int main()
    if ((NULL == CU_add_test(pSuite, "Test Point", testPOINT)) ||
 			(NULL == CU_add_test(pSuite, "Test Edge", testEDGE)) ||
 			(NULL == CU_add_test(pSuite, "Test Circle", testCIRCLE)) ||
-			(NULL == CU_add_test(pSuite, "Test Triangle", testTRIANGLE)))
+			(NULL == CU_add_test(pSuite, "Test Triangle", testTRIANGLE)) ||
+			(NULL == CU_add_test(pSuite, "Test ListNode", testLISTNODE)) ||
+			(NULL == CU_add_test(pSuite, "Test List", testLIST)))
    {
       CU_cleanup_registry();
       return CU_get_error();
