@@ -238,18 +238,201 @@ void test_listnode_creation(void)
 	CU_ASSERT(edge_equals(&e1, e2)); 
 }
 
+void test_listnode_accessors(void)
+{
+	Point p1 = point_new(1.0, 1.1);
+	ListNode *node1 = listnode_new(&p1);
+	ListNode *node2 = listnode_new(&p1);
+	ListNode *node3;
+	Point *p2;
+
+	node1->child = node2;
+	node3 = node1->child;
+	p2 = node3->value;
+	listnode_free(node1);
+}
+
 void testLISTNODE(void)
 {
 	test_listnode_creation();
+	test_listnode_accessors();
 }
 
 void test_list_creation(void)
 {
+	List* list = list_new();
+	
+	CU_ASSERT(0 == list->size);
+}
+
+void test_list_push(void)
+{
+	List *list = list_new();
+	Point p1 = point_new(1.0, 1.1);
+	list_push(list, &p1);
+ 	
+	CU_ASSERT(1 == list->size);
+	CU_ASSERT(point_equals(&p1, (Point*)list->head->value));
+
+	Point p2 = point_new(1.0, 1.1);
+	list_push(list, &p2);
+ 	
+	CU_ASSERT(2 == list->size);
+	Point *p3 = list->head->child->value;
+	CU_ASSERT(point_equals(&p2, p3));
+}
+
+void test_list_shift(void)
+{
+	List* list = list_new();
+	Point p1 = point_new(1.0, 1.1);
+	list_shift(list, &p1);
+ 	
+	CU_ASSERT(1 == list->size);
+
+	Point p2 = point_new(1.0, 1.1);
+	list_shift(list, &p2);
+ 	
+	CU_ASSERT(2 == list->size);
+	Point *p3 = list->head->value;
+	CU_ASSERT(point_equals(&p2, p3));
+}
+
+void test_list_pop(void)
+{
+	List *list = list_new();
+	ListNode *node;
+
+	node = list_pop(list);
+
+	CU_ASSERT(NULL == node);
+
+	Point p1 = point_new(1.0, 1.1);
+	list_push(list, &p1);
+	node = list_pop(list);
+
+	CU_ASSERT(0 == list->size);
+
+	Point p2 = point_new(1.0, 1.1);
+	list_push(list, &p1);
+	list_push(list, &p2);
+	node = list_pop(list);
+ 	
+	CU_ASSERT(1 == list->size);
+}
+
+void test_list_remove_head(void)
+{
+	List *list = list_new();
+	Point *points[3];
+	int points_i = 0;
+	Point p1 = point_new(1.0, 1.1);
+	Point p2 = point_new(1.0, 2.1);
+	Point p3 = point_new(1.0, 3.1);
+	ListNode* node = NULL;
+	
+	list_push(list, &p1);
+	list_push(list, &p2);
+	list_push(list, &p3);
+
+	node = (ListNode*)list->head;
+
+	CU_ASSERT(point_equals(&p1, node->value));
+
+	list_remove(list, node);
+	node = (ListNode*)list->head;
+
+	CU_ASSERT(point_equals(&p1, node->value));
+	CU_ASSERT(2 == list->size);
+}
+
+void test_list_remove_middle(void)
+{
+	List *list = list_new();
+	Point *points[3];
+	int points_i = 0;
+	Point p1 = point_new(1.0, 1.1);
+	Point p2 = point_new(1.0, 2.1);
+	Point p3 = point_new(1.0, 3.1);
+	ListNode* node = NULL;
+	
+	list_push(list, &p1);
+	list_push(list, &p2);
+	list_push(list, &p3);
+
+	node = (ListNode*)list->head->child;
+	
+	CU_ASSERT(point_equals(&p2, node->value));
+
+	list_remove(list, node);
+	node = (ListNode*)list->head;
+
+	CU_ASSERT(point_equals(&p1, node->value));
+	CU_ASSERT(point_equals(&p3, node->child->value));
+	CU_ASSERT(2 == list->size);
+}
+
+void test_list_remove_tail(void)
+{
+	List *list = list_new();
+	Point *points[3];
+	int points_i = 0;
+	Point p1 = point_new(1.0, 1.1);
+	Point p2 = point_new(1.0, 2.1);
+	Point p3 = point_new(1.0, 3.1);
+	ListNode* node = NULL;
+	
+	list_push(list, &p1);
+	list_push(list, &p2);
+	list_push(list, &p3);
+
+	node = (ListNode*)list->tail;
+
+	CU_ASSERT(point_equals(&p3, node->value));
+	
+	list_remove(list, node);
+	node = (ListNode*)list->head;
+
+	CU_ASSERT(point_equals(&p1, node->value));
+	CU_ASSERT(point_equals(&p2, node->child->value));
+	CU_ASSERT(2 == list->size);
+}
+
+void test_list_next(void)
+{
+	List *list = list_new();
+	Point *points[3];
+	int points_i = 0;
+	Point p1 = point_new(1.0, 1.1);
+	Point p2 = point_new(1.0, 2.1);
+	Point p3 = point_new(1.0, 3.1);
+	ListNode* node = NULL;
+	
+	list_push(list, &p1);
+	list_push(list, &p2);
+	list_push(list, &p3);
+
+	points[0] = &p1;
+	points[1] = &p2;
+	points[2] = &p3;	
+ 	
+	CU_ASSERT(3 == list->size);
+	while (NULL != (node = (list_next(list, node)))) {
+		CU_ASSERT(point_equals(points[points_i], (Point*)node->value));
+		points_i++;
+	}
 }
 
 void testLIST(void)
 {
 	test_list_creation();
+	test_list_push();
+	test_list_shift();
+	test_list_pop();
+	test_list_remove_head();
+	test_list_remove_middle();
+	test_list_remove_tail();
+	test_list_next();
 }
 
 int main()

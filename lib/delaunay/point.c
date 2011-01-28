@@ -14,3 +14,7 @@ int point_equals(Point *p1, Point *p2)
 	return 0;
 }
 
+void point_print(Point *p)
+{
+	printf("%f,%f", p->x, p->y);
+}

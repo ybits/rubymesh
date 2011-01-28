@@ -1,9 +1,10 @@
 CC = cc
+DEBUG = -g
 CUNIT_FLAGS = -lcunit
 OBJS =  point.o edge.o triangle.o circle.o listnode.o list.o geom_test.o
 
 test: $(OBJS)
-	$(CC) $(OBJS) $(CUNIT_FLAGS) -g -o geom_test
+	$(CC) $(OBJS) $(CUNIT_FLAGS) -gstabs -o geom_test
 
 $(OBJS):
  

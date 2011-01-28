@@ -7,6 +7,7 @@ typedef struct {
 
 Point point_new(double, double);
 int point_equals(Point*, Point*);
+void point_print(Point*);
 
 #endif
 

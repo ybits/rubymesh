@@ -1,11 +1,12 @@
 #include "list.h"
 
-List list_new(void)
+List* list_new(void)
 {
-	List list;
-	list.size = 0;
-	list.head = NULL;
-	list.tail = NULL;
+	List *list;
+	list = (List*)malloc(sizeof(List));
+	list->size = 0;
+	list->head = NULL;
+	list->tail = NULL;
 	return list;
 }
 
@@ -21,40 +22,44 @@ ListNode* list_last(List *list)
 
 ListNode* list_next(List *list, ListNode *node)
 {
-	return (ListNode*)node->child;
+	if (NULL == node) {
+		return list->head;
+	}
+	return node->child;
 }
 
 void list_push(List *list, void *value)
 {
-	ListNode node = listnode_new(value);
+	ListNode *node = listnode_new(value);
 	if (0 == list->size) {
-		list->head = &node;
+		list->head = node;
 		list->tail = list->head;
 	}
 	else {
-		list->tail->child = (struct ListNode*)&node;
-		list->tail = &node;
+		list->tail->child = node;
+		node->parent = list->tail;
+		list->tail = node;
 	}
 	list->size++;
 }
 
 void list_shift(List *list, void *value)
 {
-	ListNode node = listnode_new(value);
+	ListNode *node = listnode_new(value);
 	if (0 == list->size) {
-		list->head = &node;
+		list->head = node;
 		list->tail = list->head;
 	}
 	else {
-		list->head->parent = (struct ListNode*)&node;
-		list->head = &node;
+		list->head->parent = node;
+		list->head = node;
 	}
 	list->size++;
 }
 
 ListNode* list_pop(List *list)
 {
-	ListNode *node, *new_tail;
+	ListNode *node;
 	
 	if (0 == list->size) {
 		return NULL;
@@ -69,8 +74,34 @@ ListNode* list_pop(List *list)
 		list->tail = list->head;
 	}
 	else {
-		list->tail = (ListNode*)node->parent;	
+		list->tail = node->parent;	
 	}
+	list->size--;
+	return node;
+} 
+
+ListNode* list_remove(List *list, ListNode *node)
+{
+	ListNode *parent, *child;
+	if (0 == list->size) {
+		return NULL;
+	}
+
+	if (1 == list->size) {
+		if (node != list->head) {
+			return NULL;
+		}
+		else {
+			list->head = NULL;
+			list->tail = NULL;
+		}
+	}
+
+	parent = node->parent;
+	child = node->child;
+	if (parent) parent->child = child;
+	if (child) child->parent = parent;
+	listnode_free(node);	
 	list->size--;
 	return node;
 } 

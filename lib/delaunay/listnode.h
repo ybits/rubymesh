@@ -3,7 +3,7 @@
 #ifndef YBITS_GEOM_LISTNODE
 #define YBITS_GEOM_LISTNODE
 
-typedef struct {
+typedef struct ListNode {
 	struct ListNode* parent;
 	struct ListNode* child;
 	void* value;
