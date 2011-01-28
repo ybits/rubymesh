@@ -1,10 +1,11 @@
 #include "circle.h"
 
-Circle circle_new(Point *center, double radius) 
+Circle* circle_new(Point *center, double radius) 
 {
-	Circle c;
-	c.center = *center;
-	c.radius = radius;
+	Circle *c;
+	c = (Circle*)malloc(sizeof(Circle));
+	c->center = *center;
+	c->radius = radius;
 	return c;
 }
 
@@ -20,4 +21,9 @@ int circle_circumscribes(Circle *c, Point *p)
 												pow(c->center.y - p->y, 2);
 	if (squared_dist <= pow(c->radius, 2)) return 1;
 	return 0;
+}
+
+void circle_free(Circle *c)
+{
+	free(c);
 }

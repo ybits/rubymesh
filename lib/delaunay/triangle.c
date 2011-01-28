@@ -1,12 +1,13 @@
 #include "triangle.h"
 
-Triangle triangle_new(Point *p1, Point *p2, Point *p3) 
+Triangle* triangle_new(Point *p1, Point *p2, Point *p3) 
 {
-	Triangle t;
-	t.p1 = *p1;
-	t.p2 = *p2;
-	t.p3 = *p3;
-	t.centroid = point_new((p1->x + p2->x + p3->x) / 3,
+	Triangle *t;
+	t = (Triangle*)malloc(sizeof(Triangle));
+	t->p1 = *p1;
+	t->p2 = *p2;
+	t->p3 = *p3;
+	t->centroid = *point_new((p1->x + p2->x + p3->x) / 3,
 												 (p1->y + p2->y + p3->y) / 3); 
 	return t;
 }
@@ -50,13 +51,13 @@ int triangle_coincident_points(Triangle *t1, Triangle *t2)
 Circle triangle_circumcircle(Triangle *t)
 {
 	if (t->circumcircle.radius) {
-		Point center = triangle_circumcenter(t);
-		t->circumcircle = circle_new(&center, triangle_circumcircle_radius(t, &center));	
+		Point *center = triangle_circumcenter(t);
+		t->circumcircle = *circle_new(center, triangle_circumcircle_radius(t, center));	
 	}
 	return t->circumcircle;
 }
 
-Point triangle_circumcenter(Triangle *t)
+Point* triangle_circumcenter(Triangle *t)
 {
 	return point_new(triangle_circumcenter_x(t), triangle_circumcenter_y(t));
 }
@@ -98,9 +99,14 @@ double triangle_circumcircle_radius(Triangle *t, Point *center)
 	return sqrt(pow((t->p1.x - center->x), 2.0) + pow((t->p1.y - center->y), 2.0));
 }
 
-void triangle_edges(Triangle *t, Edge e[])
+void triangle_edges(Triangle *t, Edge* e[])
 {
 	e[0] = edge_new(&(t->p1), &(t->p2));
 	e[1] = edge_new(&(t->p2), &(t->p3));
 	e[2] = edge_new(&(t->p3), &(t->p1));
+}
+
+void triangle_free(Triangle *t)
+{
+	free(t);
 }
