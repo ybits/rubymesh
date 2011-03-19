@@ -12,8 +12,11 @@ Triangle* triangle_new(Point *p1, Point *p2, Point *p3)
 	return t;
 }
 
-int triangle_equals(Triangle *t1, Triangle *t2) 
+int triangle_equals(void *v1, void *v2) 
 {
+	Triangle *t1, *t2;
+	t1 = v1;
+	t2 = v2;
 	int coincident_points = triangle_coincident_points(t1, t2);
 	return 3 == coincident_points;
 }

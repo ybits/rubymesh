@@ -9,9 +9,12 @@ typedef struct {
 	int size;
 	ListNode *head;
 	ListNode *tail;
+	void *compare;
+	void *free;
+	void *hash;
 } List;
 
-List* list_new(void);
+List* list_new(int (*)(void*, void*), unsigned long (*)(void*), void (*)(void*));
 ListNode* list_first(List*);
 ListNode* list_last(List*);
 ListNode* list_next(List*, ListNode*);

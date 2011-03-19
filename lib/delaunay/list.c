@@ -1,12 +1,17 @@
 #include "list.h"
 
-List* list_new(void)
+List* list_new(	int (*compare)(void *a, void *b), 
+								unsigned long(*hash)(void *value),
+								void (*free)(void *value))
 {
 	List *list;
 	list = (List*)malloc(sizeof(List));
 	list->size = 0;
 	list->head = NULL;
 	list->tail = NULL;
+	list->free = free;
+	list->hash = hash;
+	list->compare = compare;
 	return list;
 }
 

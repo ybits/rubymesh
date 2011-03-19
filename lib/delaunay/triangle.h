@@ -13,7 +13,7 @@ typedef struct {
 } Triangle;
 
 Triangle* triangle_new(Point*, Point*, Point*);
-int triangle_equals(Triangle*, Triangle*);
+int triangle_equals(void*, void*);
 int trinagle_adjacent(Triangle*, Triangle*);
 Circle triangle_circumcircle(Triangle*);
 Point* triangle_circumcenter(Triangle*);

@@ -7,6 +7,7 @@
 #include "triangle.h"
 #include "listnode.h"
 #include "list.h"
+#include "hash.h"
 
 int init_suite1(void)
 {
@@ -260,14 +261,14 @@ void testLISTNODE(void)
 
 void test_list_creation(void)
 {
-	List* list = list_new();
+	List* list = list_new(NULL, NULL, NULL);
 	
 	CU_ASSERT(0 == list->size);
 }
 
 void test_list_push(void)
 {
-	List *list = list_new();
+	List *list = list_new(point_equals, point_hash, point_free);
 	Point *p1 = point_new(1.0, 1.1);
 	list_push(list, p1);
  	
@@ -284,7 +285,7 @@ void test_list_push(void)
 
 void test_list_shift(void)
 {
-	List* list = list_new();
+	List* list = list_new(point_equals, point_hash, point_free);
 	Point *p1 = point_new(1.0, 1.1);
 	list_shift(list, p1);
  	
@@ -300,7 +301,7 @@ void test_list_shift(void)
 
 void test_list_pop(void)
 {
-	List *list = list_new();
+	List *list = list_new(point_equals, point_hash, point_free);
 	ListNode *node;
 
 	node = list_pop(list);
@@ -323,7 +324,7 @@ void test_list_pop(void)
 
 void test_list_remove_head(void)
 {
-	List *list = list_new();
+	List *list = list_new(point_equals, point_hash, point_free);
 	Point *points[3];
 	int points_i = 0;
 	Point *p1 = point_new(1.0, 1.1);
@@ -348,7 +349,7 @@ void test_list_remove_head(void)
 
 void test_list_remove_middle(void)
 {
-	List *list = list_new();
+	List *list = list_new(point_equals, point_hash, point_free);
 	Point *points[3];
 	int points_i = 0;
 	Point *p1 = point_new(1.0, 1.1);
@@ -374,7 +375,7 @@ void test_list_remove_middle(void)
 
 void test_list_remove_tail(void)
 {
-	List *list = list_new();
+	List *list = list_new(point_equals, point_hash, point_free);
 	Point *points[3];
 	int points_i = 0;
 	Point *p1 = point_new(1.0, 1.1);
@@ -400,7 +401,7 @@ void test_list_remove_tail(void)
 
 void test_list_next(void)
 {
-	List *list = list_new();
+	List *list = list_new(point_equals, point_hash, point_free);
 	Point *points[3];
 	int points_i = 0;
 	Point *p1 = point_new(1.0, 1.1);
@@ -435,6 +436,36 @@ void testLIST(void)
 	test_list_next();
 }
 
+void test_hash_new(void)
+{
+	Hash *hash;
+	char *key, *value;
+	char *result;
+	
+	key = "hi\0";
+	value = "bye!\0";
+
+	hash = hash_new(memcmp, sdbm_hash, free); 	
+	hash_set(hash, key, value);
+
+	result = hash_get(hash, key);
+	strcmp(value, result);	
+
+	hash_unset(hash, key);
+	printf("KEY IS %s", key);
+	fflush(stdout);
+	result = hash_get(hash, key);
+
+	if (result == NULL) {
+		printf("Hash has been unset.");
+	}
+}
+
+void testHASH(void)
+{
+	test_hash_new();
+}
+
 void test_functionality_10_points(void)
 {
 	int i;
@@ -442,7 +473,7 @@ void test_functionality_10_points(void)
 	char buffer[50];
 	Point *p;
 	List *list;
-	list = list_new();
+	list = list_new(point_equals, point_hash, point_free);
 	ListNode *node;
 
 	printf("\nPoints being pushed:\n");
@@ -488,6 +519,7 @@ int main()
 			(NULL == CU_add_test(pSuite, "Test Triangle", testTRIANGLE)) ||
 			(NULL == CU_add_test(pSuite, "Test ListNode", testLISTNODE)) ||
 			(NULL == CU_add_test(pSuite, "Test List", testLIST)) ||
+			(NULL == CU_add_test(pSuite, "Test Hash", testHASH)) ||
 			(NULL == CU_add_test(pSuite, "Test Functionality", testFUNCTIONALITY)))
    {
       CU_cleanup_registry();

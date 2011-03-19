@@ -8,10 +8,11 @@ typedef struct {
 } Point;
 
 Point* point_new(double, double);
-int point_equals(Point*, Point*);
+int point_equals(void*, void*);
 void point_print(Point*);
 int point_tos(Point*, char*);
-void point_free(Point*);
+void point_free(void*);
+unsigned long point_hash(void*);
 
 #endif
 
