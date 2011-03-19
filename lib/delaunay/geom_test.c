@@ -440,24 +440,46 @@ void test_hash_new(void)
 {
 	Hash *hash;
 	char *key, *value;
+
+	char *keys[] = {
+		"ryan",
+		"helen",
+		"riley",
+		"nobody"
+	};
+	char *values[] = {
+		"daddy",
+		"mommy",
+		"buddy",
+		"unknown"
+	};
+	
 	char *result;
 	
-	key = "hi\0";
-	value = "bye!\0";
-
 	hash = hash_new(memcmp, sdbm_hash, free); 	
-	hash_set(hash, key, value);
 
-	result = hash_get(hash, key);
-	strcmp(value, result);	
-
-	hash_unset(hash, key);
-	printf("KEY IS %s", key);
-	fflush(stdout);
+	int i = 0;
+	for (i = 0; i < 4; i++) {
+		hash_set(hash, keys[i], values[i]);
+	}
+	for (i = 0; i < 4; i++) {
+		result = hash_get(hash, keys[i]);
+		printf("Found key: %s value: %s\n", keys[i], result);	
+	}
+	hash_set(hash, strdup("ryan"), strdup("father"));
+	for (i = 0; i < 4; i++) {
+		result = hash_get(hash, keys[i]);
+		printf("Found key: %s value: %s\n", keys[i], result);	
+	}
+	hash_unset(hash, "nobody");
 	result = hash_get(hash, key);
 
 	if (result == NULL) {
-		printf("Hash has been unset.");
+		printf("Hash has been unset.\n");
+	}
+	for (i = 0; i < 4; i++) {
+		result = hash_get(hash, keys[i]);
+		printf("Found key: %s value: %s\n", keys[i], result);	
 	}
 }
 

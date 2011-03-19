@@ -1,7 +1,7 @@
 #include "hash.h"
 
 HashPair*
-hashpair_new(void *key, void *value, unsigned int key_hash, void (*free)(void*))
+hashpair_new(void *key, void *value, unsigned long key_hash, void (*free)(void*))
 {
 	HashPair *hashpair;
 	hashpair = (HashPair*)malloc(sizeof(HashPair));
@@ -35,7 +35,7 @@ hash_new(	int (*compare)(void *a, void *b),
 	hash->free = free;
 	hash->hash = hash_fx;
 	hash->compare = compare;
-	for (i=0; i<8096; i++) {
+	for (i=0; i<HASH_INTERNAL_SIZE; i++) {
 		hash->table[i] = NULL;
 	}
 	return hash;
@@ -46,11 +46,11 @@ hash_set(Hash *hash, void *key, void *value)
 {
 	unsigned long key_hash, key_mod;
 	List *list;
-	ListNode *node;
+	ListNode *node = NULL;
 	HashPair *hashpair;
 
 	key_hash = ((unsigned long (*)(void*))hash->hash)(key);
-	key_mod = key_hash % 8096;
+	key_mod = key_hash % HASH_INTERNAL_SIZE;
 	if ((list = hash->table[key_mod]) == NULL) {
 		list = list_new(hash->compare, hash->hash, hashpair_free);
 		hash->table[key_mod] = list;
@@ -81,7 +81,7 @@ hash_get(Hash *hash, void *key)
 
 	if (key) {
 		key_hash = ((unsigned long (*)(void*))hash->hash)(key);
-		key_mod = key_hash % 8096;
+		key_mod = key_hash % HASH_INTERNAL_SIZE;
 		if (list = hash->table[key_mod]) {
 			while (node = (list_next(list, node))) {
 				hashpair = node->value;
@@ -99,11 +99,11 @@ hash_unset(Hash *hash, void *key)
 {
 	unsigned long key_hash, key_mod;
 	List *list;
-	ListNode *node;
+	ListNode *node = NULL;
 	HashPair *hashpair;
 
 	key_hash = ((unsigned long (*)(void*))hash->hash)(key);
-	key_mod = key_hash % 8096;
+	key_mod = key_hash % HASH_INTERNAL_SIZE;
 	if (list = hash->table[key_mod]) {
 		while (node = (list_next(list, node))) {
 			hashpair = node->value;
