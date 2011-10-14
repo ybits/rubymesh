@@ -1,14 +1,15 @@
+#include <string.h>
 #include "hash.h"
 
 HashPair*
-hashpair_new(void *key, void *value, unsigned long key_hash, void (*free)(void*))
+hashpair_new(void *key, void *value, unsigned long key_hash, void (*free_fx)(void*))
 {
 	HashPair *hashpair;
 	hashpair = (HashPair*)malloc(sizeof(HashPair));
 	hashpair->key = key;
 	hashpair->value = value;
 	hashpair->key_hash = key_hash;
-	hashpair->free = free;
+	hashpair->free = free_fx;
 	return hashpair;	
 }
 
@@ -23,22 +24,28 @@ hashpair_free(void *value)
 }
 
 Hash* 
-hash_new(	int (*compare)(void *a, void *b), 
+hash_new(	int (*compare_fx)(void *a, void *b), 
 					unsigned long (*hash_fx)(void *value),
-					void (*free)(void *value))
+					void (*free_fx)(void *value))
 {
 	Hash *hash;
 	int i = 0;
 
 	hash = (Hash*)malloc(sizeof(Hash));
 	hash->size = 0;
-	hash->free = free;
-	hash->hash = hash_fx;
-	hash->compare = compare;
+	hash->free = (free_fx == NULL) ? free : free_fx;
+	hash->hash = (hash_fx == NULL) ? sdbm_hash : hash_fx;
+	hash->compare = (compare_fx == NULL) ? memcmp : compare_fx;
 	for (i=0; i<HASH_INTERNAL_SIZE; i++) {
 		hash->table[i] = NULL;
 	}
 	return hash;
+}
+
+Hash*
+hash_snew()
+{
+	return hash_new(NULL,NULL,NULL);	
 }
 
 void*

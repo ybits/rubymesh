@@ -1,6 +1,7 @@
 #include "list.h"
 
-List* list_new(	int (*compare)(void *a, void *b), 
+List*
+list_new(	int (*compare)(void *a, void *b), 
 								unsigned long(*hash)(void *value),
 								void (*free)(void *value))
 {
@@ -15,17 +16,20 @@ List* list_new(	int (*compare)(void *a, void *b),
 	return list;
 }
 
-ListNode* list_first(List *list)
+ListNode*
+list_first(List *list)
 {
 	return list->head;		
 }
 
-ListNode* list_last(List *list)
+ListNode*
+list_last(List *list)
 {
 	return list->tail;
 }
 
-ListNode* list_next(List *list, ListNode *node)
+ListNode*
+list_next(List *list, ListNode *node)
 {
 	if (NULL == node) {
 		return list->head;
@@ -33,7 +37,8 @@ ListNode* list_next(List *list, ListNode *node)
 	return node->child;
 }
 
-void list_push(List *list, void *value)
+void
+list_push(List *list, void *value)
 {
 	ListNode *node = listnode_new(value);
 	if (0 == list->size) {
@@ -48,7 +53,8 @@ void list_push(List *list, void *value)
 	list->size++;
 }
 
-void list_shift(List *list, void *value)
+void
+list_shift(List *list, void *value)
 {
 	ListNode *node = listnode_new(value);
 	if (0 == list->size) {
@@ -62,7 +68,8 @@ void list_shift(List *list, void *value)
 	list->size++;
 }
 
-ListNode* list_pop(List *list)
+ListNode*
+list_pop(List *list)
 {
 	ListNode *node;
 	
@@ -85,7 +92,8 @@ ListNode* list_pop(List *list)
 	return node;
 } 
 
-ListNode* list_remove(List *list, ListNode *node)
+ListNode*
+list_remove(List *list, ListNode *node)
 {
 	ListNode *parent, *child;
 	if (0 == list->size) {
@@ -111,7 +119,8 @@ ListNode* list_remove(List *list, ListNode *node)
 	return node;
 } 
 
-void list_empty(List *list)
+void
+list_empty(List *list)
 {
 	list->size = 0;
 	list->head = NULL;

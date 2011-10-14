@@ -8,14 +8,14 @@
 #include "edge.h"
 
 typedef struct {
-	Point p1, p2, p3, centroid;
-	Circle circumcircle;
+	Point *p1, *p2, *p3, *centroid;
+	Circle *circumcircle;
 } Triangle;
 
 Triangle* triangle_new(Point*, Point*, Point*);
 int triangle_equals(void*, void*);
 int trinagle_adjacent(Triangle*, Triangle*);
-Circle triangle_circumcircle(Triangle*);
+Circle* triangle_circumcircle(Triangle*);
 Point* triangle_circumcenter(Triangle*);
 double triangle_circumcenter_x(Triangle*);
 double triangle_circumcenter_y(Triangle*);

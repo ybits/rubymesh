@@ -2,9 +2,10 @@
 #define YBITS_GEOM_EDGE
 
 #include "point.h"
+#include <string.h>
 
 typedef struct {
-	Point p1, p2;	
+	Point *p1, *p2;	
 } Edge;
 
 Edge* edge_new(Point*, Point*);

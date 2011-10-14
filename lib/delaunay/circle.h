@@ -5,7 +5,7 @@
 #include "math.h"
 
 typedef struct {
-	Point center;
+	Point *center;
 	double radius;
 } Circle;
 

@@ -25,6 +25,7 @@ typedef struct {
 } HashPair;
 
 Hash* hash_new(int (*)(void*, void*), unsigned long (*)(void*), void (*)(void*));
+Hash* hash_snew(void);
 void* hash_get(Hash *hash, void*);
 void* hash_set(Hash *hash, void*, void*);
 void* hash_unset(Hash *hash, void*);

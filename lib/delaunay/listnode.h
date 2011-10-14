@@ -1,4 +1,5 @@
 #include "stdio.h"
+#include "stdlib.h"
 
 #ifndef YBITS_GEOM_LISTNODE
 #define YBITS_GEOM_LISTNODE
