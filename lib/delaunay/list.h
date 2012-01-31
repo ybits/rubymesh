@@ -10,7 +10,7 @@ typedef struct {
 	ListNode *head;
 	ListNode *tail;
 	void *compare;
-	void *free;
+	void (*free)();
 	void *hash;
 } List;
 

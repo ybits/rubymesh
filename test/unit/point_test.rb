@@ -1,4 +1,5 @@
 require 'test/unit'
+require_relative '../test_helper'
 require 'lib/point'
 
 class PointTest < Test::Unit::TestCase
@@ -8,16 +9,16 @@ class PointTest < Test::Unit::TestCase
 
   def test_base
     point = Point.new(1,1,1)
-    assert 1, point.x
-    assert 1, point.y
-    assert 1, point.z
+    assert_equal 1, point.x
+    assert_equal 1, point.y
+    assert_equal 1, point.z
   end
 
   def test_default_values
     point = Point.new
-    assert 0, point.x
-    assert 0, point.y
-    assert 0, point.z
+    assert_equal 0, point.x
+    assert_equal 0, point.y
+    assert_equal 0, point.z
   end
 
   def test_accessors
@@ -25,17 +26,17 @@ class PointTest < Test::Unit::TestCase
     point.x = 1
     point.y = 2
     point.z = 3
-    assert 1, point.x
-    assert 2, point.y
-    assert 3, point.z
+    assert_equal 1, point.x
+    assert_equal 2, point.y
+    assert_equal 3, point.z
   end
   
   def test_addition
     p1 = Point.new(1,1,1)
     p2 = p1 + p1
-    assert 2, p2.x
-    assert 2, p2.y
-    assert 2, p2.z
+    assert_equal 2, p2.x
+    assert_equal 2, p2.y
+    assert_equal 2, p2.z
     
     assert_raise Point::InvalidArgument do
       p3 = p1 + "invalid"
@@ -45,9 +46,9 @@ class PointTest < Test::Unit::TestCase
   def test_subtraction
     p1 = Point.new(1,1,1)
     p2 = p1 - p1
-    assert 0, p2.x
-    assert 0, p2.y
-    assert 0, p2.z
+    assert_equal 0, p2.x
+    assert_equal 0, p2.y
+    assert_equal 0, p2.z
     
     assert_raise Point::InvalidArgument do
       p3 = p1 - "invalid"

@@ -1,9 +1,11 @@
 #include "list.h"
 
 List*
-list_new(	int (*compare)(void *a, void *b), 
-								unsigned long(*hash)(void *value),
-								void (*free)(void *value))
+list_new(
+	int (*compare)(void *a, void *b), 
+	unsigned long(*hash)(void *value),
+	void (*free)(void *value)
+)
 {
 	List *list;
 	list = (List*)malloc(sizeof(List));
@@ -114,7 +116,8 @@ list_remove(List *list, ListNode *node)
 	child = node->child;
 	if (parent) parent->child = child;
 	if (child) child->parent = parent;
-	listnode_free(node);	
+	if (list->free) list->free(node->value);
+	listnode_free(node);
 	list->size--;
 	return node;
 } 

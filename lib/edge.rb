@@ -9,6 +9,10 @@ class Edge < Struct.new(:p1, :p2)
     (p1 == other.p1 && p2 == other.p2) || (p1 == other.p2 && p2 == other.p1)
   end
 
+  def hash
+    self.sort.to_s
+  end
+  
   def to_s
     "[#{p1},#{p2}]"
   end

@@ -9,6 +9,12 @@
 #include "list.h"
 #include "hash.h"
 
+int
+compare_ints(void *a, void *b)
+{
+	return memcmp(a,b,sizeof(int));
+}
+
 int init_suite1(void)
 {
 	return 0;
@@ -456,7 +462,7 @@ void test_hash_new(void)
 	
 	char *result;
 	
-	hash = hash_new(memcmp, sdbm_hash, free);		
+	hash = hash_new(memcmp, memcmp, sdbm_hash, NULL, NULL);
 
 	int i = 0;
 	for (i = 0; i < 4; i++) {
@@ -483,9 +489,81 @@ void test_hash_new(void)
 	}
 }
 
+void test_hash_dynamic(void)
+{
+	Hash *hash;
+	char *key, *value;
+
+	char *keys[] = {
+		"ryan",
+		"helen",
+		"riley",
+		"nobody"
+	};
+	char *values[] = {
+		"daddy",
+		"mommy",
+		"buddy",
+		"unknown"
+	};
+	
+	char *result;
+	
+	hash = hash_new(memcmp, memcmp, sdbm_hash, free, free);
+
+	int i = 0;
+	for (i = 0; i < 4; i++) {
+		hash_set(hash, strdup(keys[i]), strdup(values[i]));
+	}
+	for (i = 0; i < 4; i++) {
+		result = hash_get(hash, keys[i]);
+		printf("Found key: %s value: %s\n", keys[i], result);	
+	}
+	hash_set(hash, strdup("ryan"), strdup("father"));
+	for (i = 0; i < 4; i++) {
+		result = hash_get(hash, keys[i]);
+		printf("Found key: %s value: %s\n", keys[i], result);	
+	}
+	hash_unset(hash, "nobody");
+	result = hash_get(hash, key);
+
+	if (result == NULL) {
+		printf("Hash has been unset.\n");
+	}
+	for (i = 0; i < 4; i++) {
+		result = hash_get(hash, keys[i]);
+		printf("Found key: %s value: %s\n", keys[i], result);	
+	}
+}
+
+void test_hash_large(void)
+{
+	Hash *hash;
+	int *key, *value;
+
+	hash = hash_new(compare_ints, compare_ints, sdbm_hash, free, free);
+
+	int i = 0, j = 0;
+	int *iv, *jv;
+	for (i = 0; i < 1000; i++) {
+		for (j = 0; j < 2; j++) {
+			iv = malloc(sizeof(iv));
+			jv = malloc(sizeof(jv));
+			memcpy(iv, &i, sizeof(i));	
+			memcpy(jv, &j, sizeof(j));
+			hash_set(hash, iv, jv);
+		}
+	}
+
+	printf("Hash count is: %d", hash->size);
+	
+}
+
 void testHASH(void)
 {
-	test_hash_new();
+	//test_hash_new();
+	//test_hash_dynamic();
+	test_hash_large();
 }
 
 void test_functionality_10_points(void)
@@ -536,11 +614,11 @@ int main()
 
 		/* add the tests to the suite */
 	 if ((NULL == CU_add_test(pSuite, "Test Point", testPOINT)) ||
-			(NULL == CU_add_test(pSuite, "Test Edge", testEDGE)) ||
-			(NULL == CU_add_test(pSuite, "Test Circle", testCIRCLE)) ||
-			(NULL == CU_add_test(pSuite, "Test Triangle", testTRIANGLE)) ||
-			(NULL == CU_add_test(pSuite, "Test ListNode", testLISTNODE)) ||
-			(NULL == CU_add_test(pSuite, "Test List", testLIST)) ||
+			//(NULL == CU_add_test(pSuite, "Test Edge", testEDGE)) ||
+			//(NULL == CU_add_test(pSuite, "Test Circle", testCIRCLE)) ||
+			//(NULL == CU_add_test(pSuite, "Test Triangle", testTRIANGLE)) ||
+			//(NULL == CU_add_test(pSuite, "Test ListNode", testLISTNODE)) ||
+			//(NULL == CU_add_test(pSuite, "Test List", testLIST)) ||
 			(NULL == CU_add_test(pSuite, "Test Hash", testHASH)) ||
 			(NULL == CU_add_test(pSuite, "Test Functionality", testFUNCTIONALITY)))
 	 {

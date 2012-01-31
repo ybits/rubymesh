@@ -4,6 +4,8 @@ require_relative 'circle'
 
 class Triangle < Struct.new(:p1, :p2, :p3) 
 
+  attr_accessor :finished, :visited
+  
   def to_s
     "[#{p1},#{p2},#{p3}]"
   end

@@ -1,5 +1,6 @@
 require_relative 'triangle'
 
+=begin
 class Triangle
   attr_accessor :finished, :visited
 end
@@ -9,8 +10,9 @@ class Edge
     self.sort.to_s
   end
 end
+=end
 
-module Delaunay
+#module Delaunay
   class Triangulation 
 
     attr_accessor :vertices, :triangles
@@ -20,6 +22,18 @@ module Delaunay
       self.vertices.uniq!
       self.vertices.sort!
       self.triangles = []
+    end
+
+    def to_json
+      triangulation = {}
+      triangulation[:points] = []
+      triangulation[:triangles] = []
+      triangulation[:quadrangles] = []
+
+      triangles.each do |t|
+        triangulation[:triangles] << [t[0], t[1], t[2]]
+      end
+      triangulation
     end
 
     def triangulate 
@@ -134,4 +148,4 @@ module Delaunay
     end
 
   end
-end
+#end
