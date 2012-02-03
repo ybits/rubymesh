@@ -24,6 +24,7 @@ hashpair_free(void *hashpair)
 
 Hash* 
 hash_new(
+	int internal_size,
 	int (*compare_key)(void *a, void *b),
 	int (*compare_value)(void *a, void *b),
 	unsigned long (*hash_fx)(void *value),
@@ -34,14 +35,17 @@ hash_new(
 	Hash *hash;
 	int i = 0;
 
-	hash = (Hash*)malloc(sizeof(Hash));
-	hash->size = 0;
-	hash->free_key = free_key;
-	hash->free_value = free_value;
-	hash->hash = (hash_fx == NULL) ? sdbm_hash : hash_fx;
-	hash->compare_key = (compare_key == NULL) ? memcmp : compare_key;
+	hash                = (Hash*) malloc(sizeof(Hash));
+	hash->table         = (List**) malloc(sizeof(List)*internal_size);
+	hash->internal_size = internal_size <= 0 ? 1024 : internal_size;
+	hash->size          = 0;
+	hash->free_key      = free_key;
+	hash->free_value    = free_value;
+	hash->hash          = (hash_fx == NULL) ? sdbm_hash : hash_fx;
+	hash->compare_key   = (compare_key == NULL) ? memcmp : compare_key;
 	hash->compare_value = (compare_value == NULL) ? memcmp : compare_value;
-	for (i=0; i<HASH_INTERNAL_SIZE; i++) {
+
+	for (i=0; i<hash->internal_size; i++) {
 		hash->table[i] = NULL;
 	}
 	return hash;
@@ -50,7 +54,7 @@ hash_new(
 Hash*
 hash_snew()
 {
-	return hash_new(NULL,NULL,NULL,NULL,NULL);
+	return hash_new(0,NULL,NULL,NULL,NULL,NULL);
 }
 
 void
@@ -63,7 +67,7 @@ hash_set(Hash *hash, void *key, void *value)
 	int replace = 0;
 
 	key_hash = ((unsigned long (*)(void*))hash->hash)(key);
-	key_mod = key_hash % HASH_INTERNAL_SIZE;
+	key_mod = key_hash % hash->internal_size;
 	if ((list = hash->table[key_mod]) == NULL) {
 		list = list_new(hash->compare_value, hash->hash, NULL);
 		hash->table[key_mod] = list;
@@ -72,27 +76,15 @@ hash_set(Hash *hash, void *key, void *value)
 	hashpair = hashpair_new(key, value, key_hash);
 	while (node = (list_next(list, node))) {
 		found_hashpair = node->value;
-		if (
-				hashpair->key_hash == key_hash &&
-				(0 == hash->compare_key(hashpair->key, found_hashpair->key))
-			) {
-			node->value = hashpair;
-			printf(
-				"Replaced key %d old value %d with value %d\n",
-				*(int *)key,
-				*(int *)found_hashpair->value,
-				*(int *)value
-			);
+		if ( hashpair->key_hash == key_hash &&
+			(0 == hash->compare_key(hashpair->key, found_hashpair->key))) {
 			hash_free_hashpair(hash, found_hashpair);
-			return;
+			list_remove(list, node);
+			hash->size -= 1;
+			break;
 		} 			
 	}	
 
-	printf(
-		"Added key %d with value %d\n",
-		*(int *)key,
-		*(int *)value
-	);
 	list_push(list, hashpair);
 	hash->size += 1;
 }
@@ -104,15 +96,16 @@ hash_get(Hash *hash, void *key)
 	List *list;
 	ListNode *node = NULL;
 	HashPair *hashpair;
-	void * rval= NULL;
+	void *rval= NULL;
 
 	if (key) {
 		key_hash = ((unsigned long (*)(void*))hash->hash)(key);
-		key_mod = key_hash % HASH_INTERNAL_SIZE;
+		key_mod = key_hash % hash->internal_size;
 		if (list = hash->table[key_mod]) {
 			while (node = (list_next(list, node))) {
 				hashpair = node->value;
-				if (hashpair->key_hash == key_hash) {
+				if ( hashpair->key_hash == key_hash &&
+					(0 == hash->compare_key(hashpair->key, key))) {
 					return hashpair->value;	
 				} 			
 			}	
@@ -130,11 +123,12 @@ hash_unset(Hash *hash, void *key)
 	HashPair *hashpair;
 
 	key_hash = ((unsigned long (*)(void*))hash->hash)(key);
-	key_mod = key_hash % HASH_INTERNAL_SIZE;
+	key_mod = key_hash % hash->internal_size;
 	if (list = hash->table[key_mod]) {
 		while (node = (list_next(list, node))) {
 			hashpair = node->value;
-			if (hashpair->key_hash == key_hash) {
+		if ( hashpair->key_hash == key_hash &&
+			(0 == hash->compare_key(hashpair->key, key))) {
 				hash_free_hashpair(hash, hashpair);
 				list_remove(list, node);
 			} 			

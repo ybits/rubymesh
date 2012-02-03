@@ -97,8 +97,7 @@ list_pop(List *list)
 ListNode*
 list_remove(List *list, ListNode *node)
 {
-	ListNode *parent, *child;
-	if (0 == list->size) {
+	if (node == NULL || 0 == list->size) {
 		return NULL;
 	}
 
@@ -112,10 +111,10 @@ list_remove(List *list, ListNode *node)
 		}
 	}
 
-	parent = node->parent;
-	child = node->child;
-	if (parent) parent->child = child;
-	if (child) child->parent = parent;
+	if (list->head == node) list->head = node->child;
+	if (list->tail == node) list->tail = node->parent;
+	if (node->parent) node->parent->child = node->child;
+	if (node->child) node->child->parent = node->parent;
 	if (list->free) list->free(node->value);
 	listnode_free(node);
 	list->size--;

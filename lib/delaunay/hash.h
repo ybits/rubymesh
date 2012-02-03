@@ -3,20 +3,17 @@
 #ifndef YBITS_GEOM_HASH
 #define YBITS_GEOM_HASH
 
-#ifndef HASH_INTERNAL_SIZE
-#define HASH_INTERNAL_SIZE 100000 
-#endif
-
 #include "list.h"
 
 typedef struct {
 	int size;
-	List *table[HASH_INTERNAL_SIZE];
+	int internal_size;
 	int (*compare_key)();
 	int (*compare_value)();
 	unsigned long (*hash)();
 	void (*free_key)();
 	void (*free_value)();
+	List **table;
 } Hash;
 
 typedef struct {
@@ -25,7 +22,7 @@ typedef struct {
 	unsigned long key_hash;
 } HashPair;
 
-Hash* hash_new(int (*)(void*, void*), int (*)(void*, void*), unsigned long (*)(void*), void (*)(void*), void (*)(void*));
+Hash* hash_new(int, int (*)(void*, void*), int (*)(void*, void*), unsigned long (*)(void*), void (*)(void*), void (*)(void*));
 Hash* hash_snew(void);
 void hash_set(Hash *hash, void*, void*);
 void* hash_get(Hash *hash, void*);

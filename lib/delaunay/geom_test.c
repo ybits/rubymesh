@@ -462,7 +462,7 @@ void test_hash_new(void)
 	
 	char *result;
 	
-	hash = hash_new(memcmp, memcmp, sdbm_hash, NULL, NULL);
+	hash = hash_new(10, strcmp, memcmp, sdbm_hash, NULL, NULL);
 
 	int i = 0;
 	for (i = 0; i < 4; i++) {
@@ -509,7 +509,7 @@ void test_hash_dynamic(void)
 	
 	char *result;
 	
-	hash = hash_new(memcmp, memcmp, sdbm_hash, free, free);
+	hash = hash_new(10, strcmp, memcmp, sdbm_hash, free, free);
 
 	int i = 0;
 	for (i = 0; i < 4; i++) {
@@ -539,30 +539,32 @@ void test_hash_dynamic(void)
 void test_hash_large(void)
 {
 	Hash *hash;
-	int *key, *value;
-
-	hash = hash_new(compare_ints, compare_ints, sdbm_hash, free, free);
-
 	int i = 0, j = 0;
-	int *iv, *jv;
-	for (i = 0; i < 1000; i++) {
+	int max = 1000;
+	int *iv, *jv, *kv;
+
+	hash = hash_new(100000, compare_ints, compare_ints, sdbm_hash, free, free);
+
+	for (i = 0; i < max; i++) {
 		for (j = 0; j < 2; j++) {
 			iv = malloc(sizeof(iv));
 			jv = malloc(sizeof(jv));
 			memcpy(iv, &i, sizeof(i));	
 			memcpy(jv, &j, sizeof(j));
 			hash_set(hash, iv, jv);
+			kv = hash_get(hash, iv);
+			
+			printf("%d => %d\n", *iv, *jv);
+			CU_ASSERT(*jv == *kv);
 		}
 	}
-
-	printf("Hash count is: %d", hash->size);
-	
+	CU_ASSERT(hash->size == max);	
 }
 
 void testHASH(void)
 {
-	//test_hash_new();
-	//test_hash_dynamic();
+	test_hash_new();
+	test_hash_dynamic();
 	test_hash_large();
 }
 
