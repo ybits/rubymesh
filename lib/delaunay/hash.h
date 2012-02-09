@@ -26,9 +26,9 @@ Hash* hash_new(int, int (*)(void*, void*), int (*)(void*, void*), unsigned long 
 Hash* hash_snew(void);
 void hash_set(Hash *hash, void*, void*);
 void* hash_get(Hash *hash, void*);
-void* hash_unset(Hash *hash, void*);
+void hash_unset(Hash *hash, void*);
 void hash_free_hashpair(Hash *hash, HashPair*);
-void hash_empty(Hash *hash);
+void hash_teardown(Hash *hash);
 
 HashPair* hash_pair_new(void*, void*, unsigned int);
 void hashpair_free(void*);

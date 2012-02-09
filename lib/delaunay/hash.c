@@ -66,6 +66,8 @@ hash_set(Hash *hash, void *key, void *value)
 	HashPair *hashpair, *found_hashpair;
 	int replace = 0;
 
+	if (!hash || !key) return;
+
 	key_hash = ((unsigned long (*)(void*))hash->hash)(key);
 	key_mod = key_hash % hash->internal_size;
 	if ((list = hash->table[key_mod]) == NULL) {
@@ -79,14 +81,16 @@ hash_set(Hash *hash, void *key, void *value)
 		if ( hashpair->key_hash == key_hash &&
 			(0 == hash->compare_key(hashpair->key, found_hashpair->key))) {
 			hash_free_hashpair(hash, found_hashpair);
-			list_remove(list, node);
-			hash->size -= 1;
+			node->value = hashpair;
+			replace = 1;
 			break;
 		} 			
 	}	
 
-	list_push(list, hashpair);
-	hash->size += 1;
+	if (!replace) {
+		list_push(list, hashpair);
+		hash->size += 1;
+	}
 }
 
 void*
@@ -98,23 +102,23 @@ hash_get(Hash *hash, void *key)
 	HashPair *hashpair;
 	void *rval= NULL;
 
-	if (key) {
-		key_hash = ((unsigned long (*)(void*))hash->hash)(key);
-		key_mod = key_hash % hash->internal_size;
-		if (list = hash->table[key_mod]) {
-			while (node = (list_next(list, node))) {
-				hashpair = node->value;
-				if ( hashpair->key_hash == key_hash &&
-					(0 == hash->compare_key(hashpair->key, key))) {
-					return hashpair->value;	
-				} 			
-			}	
-		}
+	if (!hash || !key) return rval;
+
+	key_hash = ((unsigned long (*)(void*))hash->hash)(key);
+	key_mod = key_hash % hash->internal_size;
+	if (list = hash->table[key_mod]) {
+		while (node = (list_next(list, node))) {
+			hashpair = node->value;
+			if ( hashpair->key_hash == key_hash &&
+				(0 == hash->compare_key(hashpair->key, key))) {
+				return hashpair->value;	
+			} 			
+		}	
 	}
 	return rval;
 }
 
-void*
+void
 hash_unset(Hash *hash, void *key)
 {
 	unsigned long key_hash, key_mod;
@@ -122,23 +126,50 @@ hash_unset(Hash *hash, void *key)
 	ListNode *node = NULL;
 	HashPair *hashpair;
 
+	if (!hash || !key) return;
+
 	key_hash = ((unsigned long (*)(void*))hash->hash)(key);
 	key_mod = key_hash % hash->internal_size;
 	if (list = hash->table[key_mod]) {
 		while (node = (list_next(list, node))) {
 			hashpair = node->value;
-		if ( hashpair->key_hash == key_hash &&
-			(0 == hash->compare_key(hashpair->key, key))) {
-				hash_free_hashpair(hash, hashpair);
-				list_remove(list, node);
+			if ( hashpair->key_hash == key_hash &&
+				(0 == hash->compare_key(hashpair->key, key))) {
+					hash_free_hashpair(hash, hashpair);
+					list_remove(list, node);
+					hash->size -= 1;
 			} 			
 		}	
 	}
 }
 
 void
+hash_teardown(Hash *hash)
+{
+	int i;
+	List *list;
+	ListNode *node = NULL;
+	HashPair *hashpair;
+
+	if (!hash) return;
+
+	for (i=0; i < hash->internal_size; i++) {
+		if (list = hash->table[i]) {
+			while (node = (list_last(list))) {
+				hashpair = node->value;
+				hash_free_hashpair(hash, hashpair);
+				list_remove(list, node);
+				hash->size -= 1;
+			}	
+		}
+	}
+}
+
+void
 hash_free_hashpair(Hash *hash, HashPair *hp)
 {
+	if (!hash || !hp) return;
+
 	if (hash->free_key) hash->free_key(hp->key);
 	if (hash->free_value) hash->free_value(hp->value);
 	return hashpair_free(hp);

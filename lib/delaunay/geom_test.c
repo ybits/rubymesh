@@ -540,10 +540,10 @@ void test_hash_large(void)
 {
 	Hash *hash;
 	int i = 0, j = 0;
-	int max = 1000;
+	int max = 10000000;
 	int *iv, *jv, *kv;
 
-	hash = hash_new(100000, compare_ints, compare_ints, sdbm_hash, free, free);
+	hash = hash_new(10000000, compare_ints, compare_ints, sdbm_hash, free, free);
 
 	for (i = 0; i < max; i++) {
 		for (j = 0; j < 2; j++) {
@@ -554,11 +554,40 @@ void test_hash_large(void)
 			hash_set(hash, iv, jv);
 			kv = hash_get(hash, iv);
 			
-			printf("%d => %d\n", *iv, *jv);
 			CU_ASSERT(*jv == *kv);
 		}
 	}
+	printf("%d, %d\n", hash->size, max);
 	CU_ASSERT(hash->size == max);	
+
+	sleep(15);
+
+	for (i = 0; i < max; i++) {
+		hash_unset(hash, &i);
+	}
+	printf("%d, %d\n", hash->size, max);
+	CU_ASSERT(hash->size == 0);
+
+	sleep(15);
+
+	for (i = 0; i < max; i++) {
+		for (j = 0; j < 2; j++) {
+			iv = malloc(sizeof(iv));
+			jv = malloc(sizeof(jv));
+			memcpy(iv, &i, sizeof(i));	
+			memcpy(jv, &j, sizeof(j));
+			hash_set(hash, iv, jv);
+			kv = hash_get(hash, iv);
+			
+			CU_ASSERT(*jv == *kv);
+		}
+	}
+	printf("%d, %d\n", hash->size, max);
+	CU_ASSERT(hash->size == max);	
+
+	hash_teardown(hash);
+	printf("%d, %d\n", hash->size, max);
+	CU_ASSERT(hash->size == 0);
 }
 
 void testHASH(void)
